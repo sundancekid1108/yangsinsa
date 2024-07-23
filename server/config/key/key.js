@@ -3,6 +3,7 @@ dotenv.config();
 
 const keys = {
     port: process.env.PORT || 3001,
+    apiURL: `${process.env.API_URL}`,
     database: {
         url: process.env.MONGO_URL
     },

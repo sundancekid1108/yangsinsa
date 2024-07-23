@@ -1,6 +1,6 @@
-import mongoose from 'mongoose';
+import Mongoose from 'mongoose';
 import ROLES from '../../../constants/constants.js'
-const Schema = mongoose.Schema;
+const Schema = Mongoose.Schema;
 
 const userSchema = new Schema({
     email: {
@@ -37,5 +37,5 @@ const userSchema = new Schema({
     }
 }, { timestamps: true }, { versionKey: false });
 
-const User = mongoose.model('User', userSchema);
+const User = Mongoose.model('User', userSchema);
 export default User;

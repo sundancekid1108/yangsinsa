@@ -3,6 +3,7 @@ import cors from "cors";
 import dotenv from 'dotenv';
 import dbConnect from './database/config.js';
 import keys from "./config/key/key.js";
+import router from "./router/router.js";
 
 dotenv.config();
 
@@ -19,5 +20,7 @@ app.listen(PORT, () => {
     console.log(`Listening on port ${PORT}. Check http://localhost:${PORT}/ `
     );
 });
+
+app.use(router)
 
 dbConnect()
