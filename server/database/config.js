@@ -1,5 +1,5 @@
 import mongoose from 'mongoose';
-import keys from '../config/key/key.js';
+import keys from '../config/keys/keys.js';
 
 mongoose.Promise = global.Promise;
 

@@ -1,6 +1,6 @@
 import express from 'express'
 import apiRouter from './api/index.js';
-import keys from '../config/key/key.js';
+import keys from '../config/keys/keys.js';
 const router = express.Router();
 
 const apiURL = keys.apiURL;
