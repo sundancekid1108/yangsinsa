@@ -13,29 +13,70 @@ authRouter.post('/login', async (req, res) => {
     try {
         const { email, password } = req.body
 
+        /* 이메일, 패스워드 입력 확인 */
         if (!email || !password) {
             return res.status(400).json({
                 error: "이메일, 패스워드를 확인해주세요."
             })
         }
 
+
         const user = await User.findOne({ email });
+
 
         if (!user) {
             return res.status(400).json({
-                error: "없는 이메일 주소입니다."
+                error: "존재하지 않는 계정입니다."
+            })
+        } else if (user.provider !== constants.MAILPROVIDER.EMAIL) {
+            return res.status(400).json({
+                error: "구글 계정으로 로그인하셔야 합니다."
             })
         }
 
+        // 비밀번호 체크
+        const passwordMatch = await bcrypt.compare(password, user.password);
+        if (passwordMatch) {
+            const secret = keys.jwt.secret;
+            const tokenLife = keys.jwt.tokenLife;
 
-        console.log(req.body)
-        return res.status(200).json({
-            message: 'Login Successful'
+            const payload = {
+                id: user.id,
+                email: user.email,
+                userName: user.userName,
+                role: user.role
+            }
+
+            const token = jwt.sign(payload, secret, { expiresIn: tokenLife });
+
+            if (!token) {
+                throw new Error();
+            }
+
+            return res.status(200).json({
+                success: true,
+                token: `Bearer ${token}`,
+                user: {
+                    id: user.id,
+                    email: user.email,
+                    userName: user.userName,
+                    role: user.role
+                }
+
+
         })
+        } else {
+            return res.status(400).json({
+                success: false,
+                error: "이메일, 패스워드를 확인해주세요."
+            })
+        }
+
     } catch (error) {
         console.log(error);
         return res.status(500).json({
-            message: 'Internal Server Error'
+            success: false,
+            error: 'Internal Server Error'
         })
     }
 })

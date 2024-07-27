@@ -10,6 +10,13 @@ const constants = {
         GOOGLE: 'google'
     },
 
+    SELLER_STATUS: {
+        CANCELLED: "cancelled",
+        APPROVED: "approved",
+        WAITING_APPROVAL: "waiting_approval"
+    },
+
+
     JWT_COOKIE: 'x-jwt-cookie'
 };
 

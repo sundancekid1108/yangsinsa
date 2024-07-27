@@ -15,7 +15,8 @@ const userSchema = new Schema({
     },
     provider: {
         type: String,
-        default: constants.MAILPROVIDER.EMAIL
+        default: constants.MAILPROVIDER.EMAIL,
+        enum: [constants.MAILPROVIDER.EMAIL, constants.MAILPROVIDER.GOOGLE]
     },
 
     password: {
