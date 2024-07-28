@@ -13,6 +13,7 @@ authRouter.post('/login', async (req, res) => {
     try {
         const { email, password } = req.body
 
+
         /* 이메일, 패스워드 입력 확인 */
         if (!email || !password) {
             return res.status(400).json({
@@ -150,13 +151,101 @@ authRouter.post('/register', async (req, res) => {
         })
 
     } catch (error) {
-        console.log(error);
+        // console.log(error);
         return res.status(500).json({
             success: false,
             error: error
         })
     }
 
+})
+
+authRouter.post('/updateprofile', async (req, res) => {
+    try {
+        const updateUserInfo = req.body
+        const user = await User.findOne({ _id: updateUserInfo.id })
+        if (!user) {
+            return res.status(500).json({
+                success: false,
+                error: "유저 정보를 찾을 수 없습니다."
+            })
+        } else {
+            // 이메일 업데이트
+            // 이메일 중복 체크 후 업데이트 
+            if (updateUserInfo.email) {
+                const checkDuplicateEmailUser = await User.findOne({ email: updateUserInfo.email })
+                if (checkDuplicateEmailUser) {
+                    return res.status(500).json({
+                        success: false,
+                        error: "이미 등록된 이메일입니다."
+                    })
+                } else {
+                    user.email = updateUserInfo.email
+
+                }
+            }
+
+            // 패스워드 업데이트
+            if (updateUserInfo.password) {
+                const password = updateUserInfo.password
+                const salt = await bcrypt.genSalt(10);
+                const hash = await bcrypt.hash(password, salt);
+
+                user.password = hash;
+            }
+
+            //  유저명 업데이트
+            //유저명 등록 후 업데이트 
+            if (updateUserInfo.userName) {
+                const checkDuplicateUserName = await User.findOne({ userName: updateUserInfo.userName })
+                if (checkDuplicateUserName) {
+                    return res.status(500).json({
+                        success: false,
+                        error: "이미 등록된 유저명입니다."
+                    })
+                } else {
+                    user.userName = updateUserInfo.userName
+                }
+            }
+
+            await user.save().then((user) => {
+                return res.status(200).json({
+                    success: true,
+                    user: {
+                        id: user.id,
+                        email: user.email,
+                        userName: user.userName,
+                        role: user.role
+                    }
+                })
+            })
+        }
+
+    } catch (error) {
+        return res.status(500).json({
+            success: false,
+            error: "에러"
+        })
+    }
+
+})
+
+authRouter.post('/deleteprofile', async (req, res) => {
+    try {
+        // 유저 삭제 
+        // 1. 유저 주문 목록 체크
+        // 2. 주문 목록 있으면 삭제 불가, 없으면 삭제 진행
+
+        return res.status(200).json({
+            success: true,
+            message: " 유저 정보 삭제 작업중"
+        })
+    } catch (error) {
+        return res.status(500).json({
+            success: false,
+            error: "에러"
+        })
+    }
 })
 
 export default authRouter

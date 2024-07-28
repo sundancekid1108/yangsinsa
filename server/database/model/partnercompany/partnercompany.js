@@ -2,7 +2,7 @@ import Mongoose from 'mongoose';
 import constants from '../../../constants/constants.js'
 const Schema = Mongoose.Schema;
 
-const sellerSchema = new Schema({
+const partnerCompanySchema = new Schema({
     name: {
         type: String,
         trim: true
@@ -32,5 +32,5 @@ const sellerSchema = new Schema({
     }
 }, { timestamps: true }, { versionKey: false });
 
-const Seller = Mongoose.model('Seller', sellerSchema);
-export default Seller;
+const PartnerCompany = Mongoose.model('PartnerCompany', partnerCompanySchema);
+export default PartnerCompany;
