@@ -1,9 +1,14 @@
+import React from 'react';
+import { BrowserRouter, Routes, Route, useRoutes } from 'react-router-dom'
+import Router from './router/router.js';
 
-function App() {
+const App = () => {
   return (
-    <div className="App">
-      app
-    </div>
+    <BrowserRouter>
+      <Router />
+    </BrowserRouter>
+
+
   );
 }
 
