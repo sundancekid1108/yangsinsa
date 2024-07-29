@@ -2,7 +2,7 @@ import Mongoose from 'mongoose';
 import constants from '../../../constants/constants.js'
 const Schema = Mongoose.Schema;
 
-const adminrSchema = new Schema({
+const AdminUserSchema = new Schema({
     email: {
         type: String,
         unique: true,
@@ -48,5 +48,5 @@ const adminrSchema = new Schema({
     }
 }, { timestamps: true }, { versionKey: false });
 
-const Admin = Mongoose.model('Admin', adminrSchema);
-export default Admin;
+const AdminUser = Mongoose.model('AdminUser', AdminUserSchema);
+export default AdminUser;

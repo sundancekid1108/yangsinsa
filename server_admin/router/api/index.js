@@ -1,5 +1,5 @@
 import express from 'express'
-import authRouter from './admin/authrouter/authrouter.js';
+import authRouter from './adminuser/authrouter/authrouter.js';
 
 const apiRouter = express.Router();
 
