@@ -2,51 +2,57 @@ import Mongoose from 'mongoose';
 import constants from '../../../constants/constants.js'
 const Schema = Mongoose.Schema;
 
-const AdminUserSchema = new Schema({
-    adminUserName: {
-        type: String,
-        unique: true,
-        required: true
-    },
+const AdminUserSchema = new Schema(
+	{
+		userName: {
+			type: String,
+			unique: true,
+			required: true,
+		},
 
-    password: {
-        type: String,
-        required: true
-    },
+		password: {
+			type: String,
+			required: true,
+		},
 
-    firstName: {
-        type: String,
-        required: true
-    },
-    lastName: {
-        type: String,
-        required: true
-    },
+		firstName: {
+			type: String,
+			required: true,
+		},
+		lastName: {
+			type: String,
+			required: true,
+		},
 
-    phoneNumber: {
-        type: String,
-        unique: true,
-        required: true
-    },
+		phoneNumber: {
+			type: String,
+			unique: true,
+			required: true,
+		},
 
-    adminGrade: {
-        type: String,
-        enum: [constants.ADMIN_LEVEL.ADMIN, constants.ADMIN_LEVEL.SUPER_ADMIN],
-        default: constants.ADMIN_LEVEL.ADMIN
-    },
+		adminGrade: {
+			type: String,
+			enum: [constants.ADMIN_LEVEL.ADMIN, constants.ADMIN_LEVEL.SUPER_ADMIN],
+			default: constants.ADMIN_LEVEL.ADMIN,
+		},
 
+		avatar: {
+			type: String,
+			default: "",
+		},
+		updatedDate: {
+			type: Date,
+			default: Date.now,
+		},
 
-    avatar: {
-        type: String
-    },
-
-    updatedDate: Date,
-
-    createdDate: {
-        type: Date,
-        default: Date.now
-    }
-}, { timestamps: true }, { versionKey: false });
+		createdDate: {
+			type: Date,
+			default: Date.now,
+		},
+	},
+	{ timestamps: true },
+	{ versionKey: false }
+);
 
 const AdminUser = Mongoose.model('AdminUser', AdminUserSchema);
 export default AdminUser;

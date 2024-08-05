@@ -7,19 +7,19 @@ import NotFound from '../pages/notfound/notfound.jsx';
 
 const Router = () => {
     const elements = useRoutes([
-        {
-            path: '/',
-            element: <Home />,
-        },
-        {
-            path: '/login',
-            element: <Login />,
-        },
-        {
-            path: '*',
-            element: <NotFound />,
-        }
-    ])
+			{
+				path: "/",
+				element: <Home />,
+			},
+			{
+				path: "/login",
+				element: <Login />,
+			},
+			{
+				path: "*",
+				element: <NotFound />,
+			},
+		]);
 
     return elements
 };

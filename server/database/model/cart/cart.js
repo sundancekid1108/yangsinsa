@@ -14,7 +14,10 @@ const CartSchema = new Schema({
         default: 0
     },
 
-    updatedDate: Date,
+    updatedDate: {
+        type: Date,
+        default: Date.now
+    },
 
     createdDate: {
         type: Date,

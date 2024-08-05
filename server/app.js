@@ -17,7 +17,7 @@ app.use(cors());
 
 
 app.listen(PORT, () => {
-    console.log(`User Server on Listening on port ${PORT}. Check http://localhost:${PORT}/ `
+    console.log(`Backend Server on Listening on port ${PORT}. Check http://localhost:${PORT}/ `
     );
 });
 

@@ -26,6 +26,10 @@ const brandSchema = new Schema({
         ref: 'Store',
         default: null
     },
+    updatedDate: {
+        type: Date,
+        default: Date.now
+    },
 
     createdDate: {
         type: Date,

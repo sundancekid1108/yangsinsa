@@ -1,5 +1,0 @@
-{
-    "semi": true, // 세미콜론 사용 여부
-    "useTabs": false, // 탭 사용 여부
-    "tabWidth": 4 // 탭 너비
-}

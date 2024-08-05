@@ -1,5 +1,5 @@
 import express from 'express'
-import apiRouter from './api/index.js';
+import apiRouter from './api/apirouter.js';
 import keys from '../config/keys/keys.js';
 const router = express.Router();
 

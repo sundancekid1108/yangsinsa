@@ -1,17 +1,24 @@
 import Mongoose from 'mongoose';
 import constants from '../../../constants/constants.js'
+import { type } from 'os';
 const Schema = Mongoose.Schema;
 
-const OrderSchema = new Schema({
-    cart: {
+const WishListSchema = new Schema({
+    product: {
         type: Schema.Types.ObjectId,
-        ref: 'Cart'
-    },
-    user: {
-        type: Schema.Types.ObjectId,
-        ref: 'User'
+        ref: 'Product',
+        default: null
     },
 
+    user: {
+        type: Schema.Types.ObjectId,
+        ref: 'User',
+        default: null
+    },
+    isLiked: {
+        type: Boolean,
+        default: false
+    },
     updatedDate: {
         type: Date,
         default: Date.now
@@ -21,7 +28,8 @@ const OrderSchema = new Schema({
         type: Date,
         default: Date.now
     }
-}, { timestamps: true }, { versionKey: false });
 
-const Order = Mongoose.model('Order', OrderSchema);
-export default Order;
+})
+
+const WishList = Mongoose.model('WishList', WishListSchema);
+export default WishList;

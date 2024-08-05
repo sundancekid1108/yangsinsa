@@ -1,48 +1,66 @@
-import Mongoose from 'mongoose';
-import constants from '../../../constants/constants.js'
-import { type } from 'os';
+import Mongoose from "mongoose";
+import constants from "../../../constants/constants.js";
 const Schema = Mongoose.Schema;
 
-const StoreUserSchema = new Schema({
-    storeUserName: {
-        type: String,
-        unique: true,
-        required: true
-    },
+const StoreUserSchema = new Schema(
+	{
+		userName: {
+			type: String,
+			unique: true,
+			required: true,
+		},
 
-    password: {
-        type: String,
-        required: true
-    },
+		password: {
+			type: String,
+			required: true,
+		},
 
-    firstName: {
-        type: String,
-        required: true
-    },
-    lastName: {
-        type: String,
-        required: true
-    },
+		firstName: {
+			type: String,
+			required: true,
+		},
+		lastName: {
+			type: String,
+			required: true,
+		},
 
-    phoneNumber: {
-        type: String,
-        unique: true,
-        required: true
-    },
-    avatar: {
-        type: String
-    },
+		phoneNumber: {
+			type: String,
+			unique: true,
+			required: true,
+		},
 
-    updatedDate: Date,
+		email: {
+			type: String,
+			unique: true,
+			required: true,
+		},
 
-    createdDate: {
-        type: Date,
-        default: Date.now
-    }
+		adminGrade: {
+			type: String,
+			enum: [constants.ADMIN_LEVEL.ADMIN, constants.ADMIN_LEVEL.SUPER_ADMIN],
+			default: constants.ADMIN_LEVEL.ADMIN,
+		},
 
-}, { timestamps: true }, { versionKey: false });
+		avatar: {
+			type: String,
+		},
 
-const StoreUser = Mongoose.model('StoreUser', StoreUserSchema);
+		updatedDate: {
+			type: Date,
+			default: Date.now,
+		},
+
+		createdDate: {
+			type: Date,
+			default: Date.now,
+		},
+	},
+	{ timestamps: true },
+	{ versionKey: false }
+);
+
+const StoreUser = Mongoose.model("StoreUser", StoreUserSchema);
 export default StoreUser;
 
 /* required 속성에 할당된 함수는 provider 필드의 값이 'email'이 아닌 경우 false를, 그렇지 않은 경우 true

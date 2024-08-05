@@ -29,8 +29,10 @@ const addressSchema = new Schema({
         type: Boolean,
         default: false
     },
-
-    updatedDate: Date,
+    updatedDate: {
+        type: Date,
+        default: Date.now
+    },
 
     createdDate: {
         type: Date,

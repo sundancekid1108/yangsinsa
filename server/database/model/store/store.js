@@ -32,8 +32,12 @@ const StoreSchema = new Schema({
             constants.HOLD.Approved
         ]
     },
-    updated: Date,
-    created: {
+    updatedDate: {
+        type: Date,
+        default: Date.now
+    },
+
+    createdDate: {
         type: Date,
         default: Date.now
     }

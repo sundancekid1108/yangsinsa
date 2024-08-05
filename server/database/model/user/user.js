@@ -57,7 +57,10 @@ const userSchema = new Schema({
         default: constants.GRADE.SILVER
     },
 
-    updatedDate: Date,
+    updatedDate: {
+        type: Date,
+        default: Date.now
+    },
 
     createdDate: {
         type: Date,
