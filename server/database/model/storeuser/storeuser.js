@@ -6,6 +6,7 @@ const StoreUserSchema = new Schema(
 	{
 		userName: {
 			type: String,
+			trim: true,
 			unique: true,
 			required: true,
 		},
@@ -17,10 +18,12 @@ const StoreUserSchema = new Schema(
 
 		firstName: {
 			type: String,
+			trim: true,
 			required: true,
 		},
 		lastName: {
 			type: String,
+			trim: true,
 			required: true,
 		},
 
@@ -32,6 +35,7 @@ const StoreUserSchema = new Schema(
 
 		email: {
 			type: String,
+			trim: true,
 			unique: true,
 			required: true,
 		},

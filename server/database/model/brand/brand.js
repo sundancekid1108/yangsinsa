@@ -2,40 +2,43 @@ import Mongoose from 'mongoose';
 import constants from '../../../constants/constants.js'
 const Schema = Mongoose.Schema;
 
-const brandSchema = new Schema({
-    brandName: {
-        type: String,
-        trim: true
-    },
+const brandSchema = new Schema(
+	{
+		brandName: {
+			type: String,
+			trim: true,
+		},
 
-    image: {
-        data: Buffer,
-        contentType: String
-    },
-    description: {
-        type: String,
-        trim: true
-    },
-    isActive: {
-        type: Boolean,
-        default: true
-    },
+		image: {
+			data: Buffer,
+			contentType: String,
+		},
+		description: {
+			type: String,
+		},
+		isActive: {
+			type: Boolean,
+			default: true,
+		},
 
-    store: {
-        type: Schema.Types.ObjectId,
-        ref: 'Store',
-        default: null
-    },
-    updatedDate: {
-        type: Date,
-        default: Date.now
-    },
+		store: {
+			type: Schema.Types.ObjectId,
+			ref: "Store",
+			default: null,
+		},
+		updatedDate: {
+			type: Date,
+			default: Date.now,
+		},
 
-    createdDate: {
-        type: Date,
-        default: Date.now
-    }
-}, { timestamps: true }, { versionKey: false });
+		createdDate: {
+			type: Date,
+			default: Date.now,
+		},
+	},
+	{ timestamps: true },
+	{ versionKey: false }
+);
 
 const Brand = Mongoose.model('Brand', brandSchema);
 export default Brand;

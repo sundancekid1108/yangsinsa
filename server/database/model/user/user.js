@@ -3,70 +3,83 @@ import constants from '../../../constants/constants.js'
 import { type } from 'os';
 const Schema = Mongoose.Schema;
 
-const userSchema = new Schema({
+const userSchema = new Schema(
+	{
+		email: {
+			type: String,
+			trim: true,
+			unique: true,
+			required: () => {
+				if (userSchema.provider === "email") {
+					return true;
+				} else {
+					return false;
+				}
+			},
+		},
+		provider: {
+			type: String,
+			default: constants.MAILPROVIDER.EMAIL,
+			enum: [constants.MAILPROVIDER.EMAIL, constants.MAILPROVIDER.GOOGLE],
+		},
 
+		password: {
+			type: String,
+		},
 
-    email: {
-        type: String,
-        unique: true,
-        required: () => {
-            if (userSchema.provider === 'email') { return true } else { return false };
+		userName: {
+			type: String,
+			trim: true,
+			required: true,
+			lowercase: true,
+			unique: true,
+		},
 
-        }
-    },
-    provider: {
-        type: String,
-        default: constants.MAILPROVIDER.EMAIL,
-        enum: [constants.MAILPROVIDER.EMAIL, constants.MAILPROVIDER.GOOGLE]
-    },
+		firstName: {
+			type: String,
+			trim: true,
+		},
+		lastName: {
+			type: String,
+			trim: true,
+		},
 
-    password: {
-        type: String
-    },
+		phoneNumber: {
+			type: String,
+			unique: true,
+		},
+		avatar: {
+			type: String,
+		},
 
-    userName: {
-        type: String,
-        required: true,
-        lowercase: true,
-        unique: true,
-    },
+		isSubscribed: {
+			type: Boolean,
+			default: false,
+		},
 
-    firstName: {
-        type: String
-    },
-    lastName: {
-        type: String
-    },
+		grade: {
+			type: String,
+			enum: [
+				constants.GRADE.SILVER,
+				constants.GRADE.GOLD,
+				constants.GRADE.PLATINUM,
+			],
+			default: constants.GRADE.SILVER,
+		},
 
-    phoneNumber: {
-        type: String,
-        unique: true,
-    },
-    avatar: {
-        type: String
-    },
+		updatedDate: {
+			type: Date,
+			default: Date.now,
+		},
 
-    isSubscribed: {
-        type: Boolean,
-        default: false
-    },
-
-    grade: {
-        type: String,
-        enum: [constants.GRADE.SILVER, constants.GRADE.GOLD, constants.GRADE.PLATINUM],
-        default: constants.GRADE.SILVER
-    },
-
-    updatedDate: {
-        type: Date,
-        default: Date.now
-    },
-
-    createdDate: {
-        type: Date,
-        default: Date.now
-    }
-}, { timestamps: true }, { versionKey: false });
+		createdDate: {
+			type: Date,
+			default: Date.now,
+		},
+	},
+	{ timestamps: true },
+	{ versionKey: false }
+);
 
 const User = Mongoose.model('User', userSchema);
 export default User;

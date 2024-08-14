@@ -6,9 +6,9 @@ import AdminUser from "../../../../database/model/adminuser/adminuser.js";
 import keys from "../../../../config/keys/keys.js";
 import constants from "../../../../constants/constants.js";
 
-const adminAuthRouter = express.Router();
+const adminUserAuthRouter = express.Router();
 
-adminAuthRouter.post("/login", async (req, res) => {
+adminUserAuthRouter.post("/login", async (req, res) => {
 	try {
 		const { userName, password } = req.body;
 
@@ -70,7 +70,7 @@ adminAuthRouter.post("/login", async (req, res) => {
 	}
 });
 
-adminAuthRouter.post("/register", async (req, res) => {
+adminUserAuthRouter.post("/register", async (req, res) => {
 	try {
 		const { userName, password, firstName, lastName, phoneNumber } = req.body;
 
@@ -134,7 +134,7 @@ adminAuthRouter.post("/register", async (req, res) => {
 	}
 });
 
-adminAuthRouter.post("/login", async (req, res) => {
+adminUserAuthRouter.post("/login", async (req, res) => {
 	try {
 		const { userName, password } = req.body;
 
@@ -196,7 +196,7 @@ adminAuthRouter.post("/login", async (req, res) => {
 	}
 });
 
-adminAuthRouter.post("/updateprofile", async (req, res) => {
+adminUserAuthRouter.post("/updateprofile", async (req, res) => {
 	try {
 		const updateAdminUserInfo = req.body;
 		const adminUser = await AdminUser.findById(updateAdminUserInfo.id);
@@ -250,7 +250,7 @@ adminAuthRouter.post("/updateprofile", async (req, res) => {
 	}
 });
 
-adminAuthRouter.post("/delete", async (req, res) => {
+adminUserAuthRouter.post("/delete", async (req, res) => {
 	try {
 		// 어드민  삭제
 		const { id } = req.body;
@@ -268,4 +268,4 @@ adminAuthRouter.post("/delete", async (req, res) => {
 	}
 });
 
-export default adminAuthRouter;
+export default adminUserAuthRouter;
