@@ -1,8 +1,8 @@
-import Mongoose from "mongoose";
-import constants from "../../../constants/constants.js";
+import Mongoose from 'mongoose';
+import constants from '../../../constants/constants.js'
 const Schema = Mongoose.Schema;
 
-const StoreUserSchema = new Schema(
+const AdminSchema = new Schema(
 	{
 		userName: {
 			type: String,
@@ -33,13 +33,6 @@ const StoreUserSchema = new Schema(
 			required: true,
 		},
 
-		email: {
-			type: String,
-			trim: true,
-			unique: true,
-			required: true,
-		},
-
 		adminGrade: {
 			type: String,
 			enum: [constants.ADMIN_LEVEL.ADMIN, constants.ADMIN_LEVEL.SUPER_ADMIN],
@@ -48,8 +41,8 @@ const StoreUserSchema = new Schema(
 
 		avatar: {
 			type: String,
+			default: "",
 		},
-
 		updatedDate: {
 			type: Date,
 			default: Date.now,
@@ -64,9 +57,5 @@ const StoreUserSchema = new Schema(
 	{ versionKey: false }
 );
 
-const StoreUser = Mongoose.model("StoreUser", StoreUserSchema);
-export default StoreUser;
-
-/* required 속성에 할당된 함수는 provider 필드의 값이 'email'이 아닌 경우 false를, 그렇지 않은 경우 true
-사용자가 이메일과 비밀번호로 회원가입하는 경우, provider 필드는 'email'로 설정
-사용자가 Google 계정으로 로그인하는 경우, provider 필드는 'google'로 설정, 소셜 로그인 처리 */
+const Admin = Mongoose.model('Admin', AdminSchema);
+export default Admin;

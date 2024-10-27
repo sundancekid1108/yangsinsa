@@ -6,6 +6,10 @@ import passport from "passport";
 import User from "../../../../database/model/user/user.js";
 import keys from "../../../../config/keys/keys.js";
 import constants from "../../../../constants/constants.js";
+import {
+	generateToken,
+	generateRefreshToken,
+} from "../../../../utils/generatetoken/generatetoken.js";
 
 const userAuthRouter = express.Router();
 
@@ -35,9 +39,6 @@ userAuthRouter.post("/login", async (req, res) => {
 		// 비밀번호 체크
 		const passwordMatch = await bcrypt.compare(password, user.password);
 		if (passwordMatch) {
-			const secret = keys.jwt.secret;
-			const tokenLife = keys.jwt.tokenLife;
-
 			const payload = {
 				id: user.id,
 				email: user.email,
@@ -45,15 +46,22 @@ userAuthRouter.post("/login", async (req, res) => {
 				role: user.role,
 			};
 
-			const token = jwt.sign(payload, secret, { expiresIn: tokenLife });
+			const token = generateToken(payload);
+			const refreshToken = generateRefreshToken();
 
-			if (!token) {
-				throw new Error();
-			}
+
+			//로그인시 refreshToken생성
+			await Refreshtoken.findOneAndUpdate(
+				{userId: storeAdmin.id}, /* query */
+				{userId: storeAdmin.id, refreshToken: refreshToken}, /* update */
+				{ upsert: true}, /* create if it doesn't exist */
+			);
+
 
 			return res.status(200).json({
 				success: true,
 				token: `Bearer ${token}`,
+				refreshToken: refreshToken,
 				user: {
 					id: user.id,
 					email: user.email,

@@ -2,13 +2,16 @@ import express from "express";
 import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
 import crypto from "crypto";
-import AdminUser from "../../../../database/model/adminuser/adminuser.js";
+import Admin from "../../../../database/model/admin/admin.js";
+import Refreshtoken from "../../../../database/model/refreshtoken/refreshtoken.js";
 import keys from "../../../../config/keys/keys.js";
 import constants from "../../../../constants/constants.js";
+import {generateToken, generateRefreshToken} from '../../../../utils/generatetoken/generatetoken.js';
 
-const adminUserAuthRouter = express.Router();
 
-adminUserAuthRouter.post("/login", async (req, res) => {
+const adminAuthRouter = express.Router();
+
+adminAuthRouter.post("/login", async (req, res) => {
 	try {
 		const { userName, password } = req.body;
 
@@ -19,7 +22,7 @@ adminUserAuthRouter.post("/login", async (req, res) => {
 			});
 		}
 
-		const adminUser = await AdminUser.findOne({ userName });
+		const adminUser = await Admin.findOne({ userName });
 
 		//유저 등록 체크
 		if (!adminUser) {
@@ -32,8 +35,7 @@ adminUserAuthRouter.post("/login", async (req, res) => {
 		const passwordMatch = await bcrypt.compare(password, adminUser.password);
 
 		if (passwordMatch) {
-			const secret = keys.jwt.secret;
-			const tokenLife = keys.jwt.tokenLife;
+
 
 			const payload = {
 				id: adminUser.id,
@@ -41,11 +43,17 @@ adminUserAuthRouter.post("/login", async (req, res) => {
 				adminGrade: adminUser.adminGrade,
 			};
 
-			const token = jwt.sign(payload, secret, { expiresIn: tokenLife });
+			const token = generateToken(payload)
 
-			if (!token) {
-				throw new Error();
-			}
+
+			//로그인시 refreshToken생성
+			await Refreshtoken.findOneAndUpdate(
+				{userId: storeAdmin.id}, /* query */
+				{userId: storeAdmin.id, refreshToken: refreshToken}, /* update */
+				{ upsert: true}, /* create if it doesn't exist */
+			);
+
+
 
 			return res.status(200).json({
 				success: true,
@@ -70,7 +78,7 @@ adminUserAuthRouter.post("/login", async (req, res) => {
 	}
 });
 
-adminUserAuthRouter.post("/register", async (req, res) => {
+adminAuthRouter.post("/register", async (req, res) => {
 	try {
 		const { userName, password, firstName, lastName, phoneNumber } = req.body;
 
@@ -81,7 +89,7 @@ adminUserAuthRouter.post("/register", async (req, res) => {
 
 		// 유저명 중복 체크
 		if (userName) {
-			const dupulicateUserName = await AdminUser.findOne({
+			const dupulicateUserName = await Admin.findOne({
 				userName,
 			});
 			if (dupulicateUserName) {
@@ -91,7 +99,7 @@ adminUserAuthRouter.post("/register", async (req, res) => {
 
 		// 전화번호 중복 체크
 		if (phoneNumber) {
-			const dupulicateAdminUserPhoneNumber = await AdminUser.findOne({
+			const dupulicateAdminUserPhoneNumber = await Admin.findOne({
 				phoneNumber,
 			});
 			if (dupulicateAdminUserPhoneNumber) {
@@ -99,7 +107,7 @@ adminUserAuthRouter.post("/register", async (req, res) => {
 			}
 		}
 
-		const newAdminUser = new AdminUser({
+		const newAdminUser = new Admin({
 			userName,
 			password,
 			firstName,
@@ -134,7 +142,7 @@ adminUserAuthRouter.post("/register", async (req, res) => {
 	}
 });
 
-adminUserAuthRouter.post("/login", async (req, res) => {
+adminAuthRouter.post("/login", async (req, res) => {
 	try {
 		const { userName, password } = req.body;
 
@@ -144,7 +152,7 @@ adminUserAuthRouter.post("/login", async (req, res) => {
 			});
 		}
 
-		const adminUser = await AdminUser.findOne({ userName });
+		const adminUser = await Admin.findOne({ userName });
 
 		if (!adminUser) {
 			return res.status(400).json({
@@ -167,9 +175,7 @@ adminUserAuthRouter.post("/login", async (req, res) => {
 
 			const token = jwt.sign(payload, secret, { expiresIn: tokenLife });
 
-			if (!token) {
-				throw new Error();
-			}
+
 
 			return res.status(200).json({
 				success: true,
@@ -196,10 +202,10 @@ adminUserAuthRouter.post("/login", async (req, res) => {
 	}
 });
 
-adminUserAuthRouter.post("/updateprofile", async (req, res) => {
+adminAuthRouter.post("/updateprofile", async (req, res) => {
 	try {
 		const updateAdminUserInfo = req.body;
-		const adminUser = await AdminUser.findById(updateAdminUserInfo.id);
+		const adminUser = await Admin.findById(updateAdminUserInfo.id);
 		if (!adminUser) {
 			return res.status(500).json({
 				success: false,
@@ -217,7 +223,7 @@ adminUserAuthRouter.post("/updateprofile", async (req, res) => {
 
 			//전화번호 업데이트(중복 체크 포함)
 			if (updateAdminUserInfo.phoneNumber) {
-				const dupulicateAdminUserPhoneNumber = await AdminUser.findOne({
+				const dupulicateAdminUserPhoneNumber = await Admin.findOne({
 					phoneNumber: updateAdminUserInfo.phoneNumber,
 				});
 				if (dupulicateAdminUserPhoneNumber) {
@@ -250,11 +256,11 @@ adminUserAuthRouter.post("/updateprofile", async (req, res) => {
 	}
 });
 
-adminUserAuthRouter.post("/delete", async (req, res) => {
+adminAuthRouter.post("/delete", async (req, res) => {
 	try {
 		// 어드민  삭제
 		const { id } = req.body;
-		const adminUser = await AdminUser.findById(id);
+		const adminUser = await Admin.findById(id);
 
 		return res.status(200).json({
 			success: true,
@@ -268,4 +274,4 @@ adminUserAuthRouter.post("/delete", async (req, res) => {
 	}
 });
 
-export default adminUserAuthRouter;
+export default adminAuthRouter;

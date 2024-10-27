@@ -1,8 +1,8 @@
-import Mongoose from 'mongoose';
-import constants from '../../../constants/constants.js'
+import Mongoose from "mongoose";
+import constants from "../../../constants/constants.js";
 const Schema = Mongoose.Schema;
 
-const AdminUserSchema = new Schema(
+const StoreAdminSchema = new Schema(
 	{
 		userName: {
 			type: String,
@@ -33,6 +33,13 @@ const AdminUserSchema = new Schema(
 			required: true,
 		},
 
+		email: {
+			type: String,
+			trim: true,
+			unique: true,
+			required: true,
+		},
+
 		adminGrade: {
 			type: String,
 			enum: [constants.ADMIN_LEVEL.ADMIN, constants.ADMIN_LEVEL.SUPER_ADMIN],
@@ -41,8 +48,8 @@ const AdminUserSchema = new Schema(
 
 		avatar: {
 			type: String,
-			default: "",
 		},
+
 		updatedDate: {
 			type: Date,
 			default: Date.now,
@@ -57,5 +64,5 @@ const AdminUserSchema = new Schema(
 	{ versionKey: false }
 );
 
-const AdminUser = Mongoose.model('AdminUser', AdminUserSchema);
-export default AdminUser;
+const StoreAdmin = Mongoose.model("StoreAdmin", StoreAdminSchema);
+export default StoreAdmin;

@@ -1,8 +1,8 @@
 import express from "express";
-import adminUserAuthRouter from "./adminuserauthrouter/adminuserauthrouter.js";
+import adminUserAuthRouter from "./adminauthrouter/adminauthrouter.js";
 
 const adminApiRouter = express.Router();
 
-adminApiRouter.use("/auth", adminUserAuthRouter);
+adminApiRouter.use("/admin/auth", adminUserAuthRouter);
 
 export default adminApiRouter;

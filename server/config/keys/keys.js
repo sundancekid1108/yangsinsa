@@ -9,7 +9,8 @@ const keys = {
     },
     jwt: {
         secret: process.env.JWT_SECRET_KEY,
-        tokenLife: '7d'
+        tokenLife: '7d',
+        refreshTokenLife: "14d"
     }
 };
 

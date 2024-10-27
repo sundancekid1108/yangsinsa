@@ -17,6 +17,7 @@ const userSchema = new Schema(
 				}
 			},
 		},
+
 		provider: {
 			type: String,
 			default: constants.MAILPROVIDER.EMAIL,
@@ -66,6 +67,8 @@ const userSchema = new Schema(
 			],
 			default: constants.GRADE.SILVER,
 		},
+
+
 
 		updatedDate: {
 			type: Date,

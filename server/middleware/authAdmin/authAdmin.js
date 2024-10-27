@@ -1,17 +1,18 @@
-const authAdmin =
-	(...roles) =>
-	(req, res, next) => {
-		if (!req.user) {
-			return res.status(401).send("Unauthorized");
-		}
+const authAdmin = (req, res, next) => {
+	console.log(req.decoded)
+	const adminGrade = req.decoded.adminGrade
 
-		const isAdmin = roles.find(
-			(adminGrade) => req.user.adminGrade === adminGrade
-		);
-		if (!isAdmin) {
-			return res.status(403).send("You are not allowed to make this request.");
-		} else {
-			return next();
-		}
-	};
-export default authAdmin;
+	if(adminGrade){
+		next()
+	} else {
+		return res.status(403).json({message: '어드민 권한이 없습니다.'});
+	}
+
+};
+
+const authUser = (req,res, next) => {
+	console.log("authadmin", req)
+	next()
+}
+
+export {authAdmin,authUser }

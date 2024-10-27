@@ -3,13 +3,15 @@ import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
 import crypto from "crypto";
 import passport from "passport";
-import StoreUser from "../../../../database/model/storeuser/storeuser.js";
+import StoreAdmin from "../../../../database/model/storeadmin/storeadmin.js";
+import Refreshtoken from "../../../../database/model/refreshtoken/refreshtoken.js";
 import keys from "../../../../config/keys/keys.js";
 import constants from "../../../../constants/constants.js";
+import {generateToken, generateRefreshToken} from '../../../../utils/generatetoken/generatetoken.js';
 
-const storeUserAuthRouter = express.Router();
+const storeadminauthrouter = express.Router();
 
-storeUserAuthRouter.post("/login", async (req, res) => {
+storeadminauthrouter.post("/login", async (req, res) => {
 	try {
 		const { userName, password } = req.body;
 
@@ -19,41 +21,50 @@ storeUserAuthRouter.post("/login", async (req, res) => {
 				error: "필수 필드를 입력해주세요.",
 			});
 		}
-		const storeUser = await StoreUser.findOne({ userName });
+		const storeAdmin = await StoreAdmin.findOne({ userName });
 
 		//유저 등록 체크
-		if (!storeUser) {
+		if (!storeAdmin) {
 			return res.status(400).json({
 				error: "등록되지 않은 유저입니다.",
 			});
 		}
 
 		//비밀번호 체크
-		const passwordMatch = await bcrypt.compare(password, storeUser.password);
+		const passwordMatch = await bcrypt.compare(password, storeAdmin.password);
 
 		if (passwordMatch) {
-			const secret = keys.jwt.secret;
-			const tokenLife = keys.jwt.tokenLife;
+
 
 			const payload = {
-				id: storeUser.id,
-				userName: storeUser.userName,
-				adminGrade: storeUser.adminGrade,
+				id: storeAdmin.id,
+				userName: storeAdmin.userName,
+				adminGrade: storeAdmin.adminGrade,
 			};
 
-			const token = jwt.sign(payload, secret, { expiresIn: tokenLife });
+			const token = generateToken(payload)
+			const refreshToken = generateRefreshToken({})
 
-			if (!token) {
-				throw new Error();
-			}
+
+
+			//로그인시 refreshToken생성
+			await Refreshtoken.findOneAndUpdate(
+				{userId: storeAdmin.id}, /* query */
+				{userId: storeAdmin.id, refreshToken: refreshToken}, /* update */
+				{ upsert: true}, /* create if it doesn't exist */
+			);
+
+
+
 
 			return res.status(200).json({
 				success: true,
 				token: `Bearer ${token}`,
-				adminUser: {
-					id: storeUser.id,
-					userName: storeUser.userName,
-					adminGrade: storeUser.adminGrade,
+				refreshToken: refreshToken,
+				storeAdminUser: {
+					id: storeAdmin.id,
+					userName: storeAdmin.userName,
+					adminGrade: storeAdmin.adminGrade,
 				},
 			});
 		} else {
@@ -70,7 +81,7 @@ storeUserAuthRouter.post("/login", async (req, res) => {
 	}
 });
 
-storeUserAuthRouter.post("/register", async (req, res) => {
+storeadminauthrouter.post("/register", async (req, res) => {
 	try {
 		const { userName, password, firstName, lastName, phoneNumber, email } =
 			req.body;
@@ -89,7 +100,7 @@ storeUserAuthRouter.post("/register", async (req, res) => {
 		}
 		// 유저명 중복 체크
 		if (userName) {
-			const dupulicateUserName = await StoreUser.findOne({
+			const dupulicateUserName = await StoreAdmin.findOne({
 				userName,
 			});
 			if (dupulicateUserName) {
@@ -101,10 +112,10 @@ storeUserAuthRouter.post("/register", async (req, res) => {
 
 		// 전화번호 중복 체크
 		if (phoneNumber) {
-			const dupulicateStoreUserPhoneNumber = await StoreUser.findOne({
+			const dupulicatestoreAdminPhoneNumber = await StoreAdmin.findOne({
 				phoneNumber,
 			});
-			if (dupulicateStoreUserPhoneNumber) {
+			if (dupulicatestoreAdminPhoneNumber) {
 				return res.status(400).json({
 					error: "이미 등록된 전화번호입니다.",
 				});
@@ -113,17 +124,17 @@ storeUserAuthRouter.post("/register", async (req, res) => {
 
 		// 이메일 중복 체크
 		if (email) {
-			const dupulicateStoreUserEmail = await StoreUser.findOne({
+			const dupulicatestoreAdminEmail = await StoreAdmin.findOne({
 				email,
 			});
-			if (dupulicateStoreUserEmail) {
+			if (dupulicatestoreAdminEmail) {
 				return res.status(400).json({
 					error: "이미 등록된 이메일입니다.",
 				});
 			}
 		}
 
-		const newStoreUser = new StoreUser({
+		const newstoreAdmin = new StoreAdmin({
 			userName,
 			password,
 			firstName,
@@ -135,17 +146,17 @@ storeUserAuthRouter.post("/register", async (req, res) => {
 		if (password) {
 			const salt = await bcrypt.genSalt(10);
 			const hash = await bcrypt.hash(password, salt);
-			newStoreUser.password = hash;
+			newstoreAdmin.password = hash;
 		}
 
 		// 유저 정보 저장
-		await newStoreUser.save().then((storeUser) => {
+		await newstoreAdmin.save().then((storeAdmin) => {
 			// console.log(user)
 			return res.status(200).json({
 				success: true,
-				storeUser: {
-					id: storeUser.id,
-					email: storeUser.email,
+				storeAdmin: {
+					id: storeAdmin.id,
+					userName: storeAdmin.userName,
 				},
 			});
 		});
@@ -157,46 +168,46 @@ storeUserAuthRouter.post("/register", async (req, res) => {
 	}
 });
 
-storeUserAuthRouter.post("/updateprofile", async (req, res) => {
-	const updateStoreUserInfo = req.body;
-	const storeUser = await StoreUser.findById(updateStoreUserInfo.id);
-	if (!storeUser) {
+storeadminauthrouter.post("/updateprofile", async (req, res) => {
+	const updatestoreAdminInfo = req.body;
+	const storeAdmin = await StoreAdmin.findById(updatestoreAdminInfo.id);
+	if (!storeAdmin) {
 		return res.status(500).json({
 			success: false,
 			error: "유저 정보를 찾을 수 없습니다.",
 		});
 	} else {
-		if (updateStoreUserInfo.userName) {
-			const duplicateStoreUserName = await StoreUser.findOne({
-				userName: updateStoreUserInfo.userName,
+		if (updatestoreAdminInfo.userName) {
+			const duplicatestoreAdminName = await StoreAdmin.findOne({
+				userName: updatestoreAdminInfo.userName,
 			});
-			if (duplicateStoreUserName) {
+			if (duplicatestoreAdminName) {
 				return res.status(400).json({
 					success: false,
 					error: "이미 등록된 유저명입니다.",
 				});
 			} else {
-				storeUser.userName = updateStoreUserInfo.userName;
+				storeAdmin.userName = updatestoreAdminInfo.userName;
 			}
 		}
 		// 패스워드 업데이트
-		if (updateStoreUserInfo.password) {
-			const password = updateStoreUserInfo.password;
+		if (updatestoreAdminInfo.password) {
+			const password = updatestoreAdminInfo.password;
 			const salt = await bcrypt.genSalt(10);
 			const hash = await bcrypt.hash(password, salt);
 
-			storeUser.password = hash;
+			storeAdmin.password = hash;
 		}
-		await storeUser.save().then((storeUser) => {
+		await storeAdmin.save().then((storeAdmin) => {
 			return res.status(200).json({
 				success: true,
-				storeUser: {
-					id: storeUser.id,
-					userName: storeUser.userName,
+				storeAdmin: {
+					id: storeAdmin.id,
+					userName: storeAdmin.userName,
 				},
 			});
 		});
 	}
 });
 
-export default storeUserAuthRouter;
+export default storeadminauthrouter;

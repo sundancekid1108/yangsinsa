@@ -1,8 +1,5 @@
 import express from "express";
 import Store from "../../../../database/model/store/store.js";
-import authJwt from "../../../../middleware/authjwt/authjwt.js";
-import authAdmin from "../../../../middleware/authAdmin/authAdmin.js";
-
 const storeRouter = express.Router();
 
 // 상점 등록
@@ -84,7 +81,7 @@ storeRouter.post("/createstore", async (req, res) => {
 		await newStore.save().then((store) => {
 			return res.status(200).json({
 				success: true,
-				message: "상점 등록 성공",
+
 				store,
 			});
 		});
@@ -97,7 +94,7 @@ storeRouter.post("/createstore", async (req, res) => {
 });
 
 // 상점 리스트 조회
-storeRouter.get("/storelist", async (req, res) => {
+storeRouter.get("/storelist",  async (req, res) => {
 	try {
 		const storeList = await Store.find().sort("-createdDate").exec();
 		return res.status(200).json({
@@ -140,5 +137,52 @@ storeRouter.post("/searchstore", async (req, res) => {
 		});
 	}
 });
+
+storeRouter.get('/storedetail/:storeid', async (req, res) => {
+	try {
+		const { storeId } = req.params.storeid;
+		const store = await Store.findById(storeId);
+		if (store) {
+			return res.status(200).json({
+				success: true,
+				store,
+			});
+		} else {
+			return res.status(500).json({
+			success: false,
+			error: "상점 정보 없음",
+		});
+		}
+	} catch (error) {
+		return res.status(500).json({
+			success: false,
+			error: error,
+		});
+	}
+});
+
+/// 상점 삭제
+storeRouter.delete("/deletestore/:storeId", async (req, res) => { 
+	try { 
+		const {storeId} = req.params.storeId;
+		const deleteStore = await Store.findByIdAndDelete(storeId);
+		if (deleteStore) {
+			return res.status(200).json({
+				success: true,
+				message: "상점 삭제 성공",
+			});
+		}
+	} catch (error) {
+		return res.status(500).json({
+			success: false,
+			error: error,
+		});
+	}
+})
+
+
+	
+
+
 
 export default storeRouter;
