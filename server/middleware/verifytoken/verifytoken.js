@@ -8,12 +8,12 @@ const checkValidateToken = (token) =>{
     let decoded = null
     try {
         decoded = jwt.verify(token, secret); // JWT를 검증합니다.
-        console.log("decoded", decoded);
+        // console.log("decoded", decoded);
         if(decoded){
             return true
         }
     } catch (error) {
-        console.log("error", error);
+        // console.log("error", error);
         return false
     }
 }
@@ -29,6 +29,8 @@ const verifyToken = async (req, res, next) => {
         const accessToken = headers.authorization?.split(' ')[1]
 
         const userId = req.body.id
+        console.log("userId", userId)
+
         if (accessToken === undefined) {
             return res.status(401).json({error: '토큰 없음'})
         }
@@ -38,23 +40,23 @@ const verifyToken = async (req, res, next) => {
             const isValidatedAccessToken = checkValidateToken(accessToken)
             // console.log(isValidatedAccessToken)
             if (isValidatedAccessToken) {
-                const decoded = jwt.verify(accessToken, secret);
-                req.decoded = decoded
-                return res.status(403).json({message: 'accesstoken 살아있음'})
-                // next()
+                req.decoded = jwt.verify(accessToken, secret)
+                // return res.status(403).json({message: 'accesstoken 살아있음'})
+                next()
             } else {
-                let refreshToken = null
-                const isValidatedRefreshToken = checkValidateToken(refreshToken)
+                const refreshToken = await RefreshToken.findOne({userId });
+                console.log("refreshToken", refreshToken)
+                const isValidatedRefreshToken = checkValidateToken(refreshToken.refreshToken)
                 if (isValidatedRefreshToken){
                     //accesstoken 만료 refreshtoken살아있으면 새로운 accesstoken 발행
+                    return res.status(403).json({message: 'accesstoken 만료, refreshtoken 살아있음'})
 
                 } else {
                     //accesstoken 만료 refreshtoken만료 > 로그아웃, refreshToken 삭제
-                    return res.status(403).json({message: 'accesstoken 만료, refreshtoken만료'})
+                    return res.status(403).json({error : 'accesstoken 만료, refreshtoken만료'})
                 }
 
 
-                return res.status(403).json({message: 'accesstoken 만료'})
             }
 
         }

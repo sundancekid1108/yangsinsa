@@ -1,13 +1,14 @@
-import logo from './logo.svg';
-import './App.css';
+import React from 'react';
+import { BrowserRouter, Routes, Route, useRoutes } from 'react-router-dom'
+import Router from './router/router.js';
 
-function App() {
+const App = () => {
   return (
-    <div className="App">
-      <header className="App-header">
-       store admin
-      </header>
-    </div>
+    <BrowserRouter>
+      <Router />
+    </BrowserRouter>
+
+
   );
 }
 
