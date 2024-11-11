@@ -28,7 +28,7 @@ brandRouter.post("/createbrand", async (req, res) => {
 
 		await newBrand.save().then((brand) => {
 			return res.status(200).json({
-				success: true,
+				response: true,
 				brand: {
 					id: brand._id,
 					brandName: brand.brandName,
@@ -38,25 +38,23 @@ brandRouter.post("/createbrand", async (req, res) => {
 		});
 	} catch (error) {
 		return res.status(500).json({
-			success: false,
+			response: false,
 			error: error,
 		});
 	}
 });
 
-brandRouter.get("/brandlist",  async (req, res, next) => {
-
+brandRouter.get("/brandlist", async (req, res, next) => {
 	try {
-
 		const brandList = await Brand.find().sort("-createdDate").exec();
 
 		return res.json({
-			success: true,
+			response: true,
 			brandList,
 		});
 	} catch (error) {
 		return res.status(500).json({
-			success: false,
+			response: false,
 			error: error,
 		});
 	}
@@ -64,12 +62,8 @@ brandRouter.get("/brandlist",  async (req, res, next) => {
 
 brandRouter.post("/searchbrand", authAdmin, async (req, res) => {
 	try {
-
-	} catch (error) {
-
-	}
+	} catch (error) {}
 });
-
 
 brandRouter.get("/branddetail/:brandid", async (req, res) => {
 	try {
@@ -77,18 +71,18 @@ brandRouter.get("/branddetail/:brandid", async (req, res) => {
 		const brand = await Brand.findById(brandId);
 		if (brand) {
 			return res.status(200).json({
-				success: true,
+				response: true,
 				store,
 			});
 		} else {
 			return res.status(500).json({
-				success: false,
+				response: false,
 				error: "브랜드 정보 없음",
 			});
 		}
 	} catch (error) {
 		return res.status(500).json({
-			success: false,
+			response: false,
 			error: error,
 		});
 	}

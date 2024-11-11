@@ -13,6 +13,7 @@ const adminAuthRouter = express.Router();
 
 adminAuthRouter.post("/login", async (req, res) => {
 	try {
+		console.log(req.body);
 		const { userName, password } = req.body;
 
 		// 필수 필드 체크
@@ -35,28 +36,24 @@ adminAuthRouter.post("/login", async (req, res) => {
 		const passwordMatch = await bcrypt.compare(password, adminUser.password);
 
 		if (passwordMatch) {
-
-
 			const payload = {
 				id: adminUser.id,
 				userName: adminUser.userName,
 				adminGrade: adminUser.adminGrade,
 			};
 
-			const token = generateToken(payload)
-
+			const token = generateToken(payload);
+			const refreshToken = generateRefreshToken(payload);
 
 			//로그인시 refreshToken생성
 			await Refreshtoken.findOneAndUpdate(
-				{userId: storeAdmin.id}, /* query */
-				{userId: storeAdmin.id, refreshToken: refreshToken}, /* update */
-				{ upsert: true}, /* create if it doesn't exist */
+				{ userId: adminUser.id } /* query */,
+				{ userId: adminUser.id, refreshToken: refreshToken } /* 업데이트 */,
+				{ upsert: true } /* 저장된 토큰 없으면 생성 */
 			);
 
-
-
 			return res.status(200).json({
-				success: true,
+				response: true,
 				token: `Bearer ${token}`,
 				adminUser: {
 					id: adminUser.id,
@@ -66,13 +63,13 @@ adminAuthRouter.post("/login", async (req, res) => {
 			});
 		} else {
 			return res.status(400).json({
-				success: false,
+				response: false,
 				error: "이메일, 패스워드를 확인해주세요.",
 			});
 		}
 	} catch (error) {
 		return res.status(500).json({
-			success: false,
+			response: false,
 			error: error,
 		});
 	}
@@ -125,7 +122,7 @@ adminAuthRouter.post("/register", async (req, res) => {
 		await newAdminUser.save().then((adminUser) => {
 			// console.log(user)
 			return res.status(200).json({
-				success: true,
+				response: true,
 				adminUser: {
 					id: adminUser.id,
 					email: adminUser.email,
@@ -136,7 +133,7 @@ adminAuthRouter.post("/register", async (req, res) => {
 		});
 	} catch (error) {
 		return res.status(500).json({
-			success: false,
+			response: false,
 			error: error,
 		});
 	}
@@ -175,10 +172,8 @@ adminAuthRouter.post("/login", async (req, res) => {
 
 			const token = jwt.sign(payload, secret, { expiresIn: tokenLife });
 
-
-
 			return res.status(200).json({
-				success: true,
+				response: true,
 				token: `Bearer ${token}`,
 				adminUser: {
 					id: adminUser.id,
@@ -190,13 +185,13 @@ adminAuthRouter.post("/login", async (req, res) => {
 			});
 		} else {
 			return res.status(400).json({
-				success: false,
+				response: false,
 				error: "아이디, 패스워드를 확인해주세요.",
 			});
 		}
 	} catch (error) {
 		return res.status(500).json({
-			success: false,
+			response: false,
 			error: error,
 		});
 	}
@@ -208,7 +203,7 @@ adminAuthRouter.post("/updateprofile", async (req, res) => {
 		const adminUser = await Admin.findById(updateAdminUserInfo.id);
 		if (!adminUser) {
 			return res.status(500).json({
-				success: false,
+				response: false,
 				error: "유저 정보를 찾을 수 없습니다.",
 			});
 		} else {
@@ -238,7 +233,7 @@ adminAuthRouter.post("/updateprofile", async (req, res) => {
 
 		await adminUser.save().then((adminUser) => {
 			return res.status(200).json({
-				success: true,
+				response: true,
 				adminUser: {
 					id: adminUser.id,
 					firstName: adminUser.firstName,
@@ -250,7 +245,7 @@ adminAuthRouter.post("/updateprofile", async (req, res) => {
 		});
 	} catch (error) {
 		return res.status(500).json({
-			success: false,
+			response: false,
 			error: error,
 		});
 	}
@@ -263,12 +258,12 @@ adminAuthRouter.post("/delete", async (req, res) => {
 		const adminUser = await Admin.findById(id);
 
 		return res.status(200).json({
-			success: true,
+			response: true,
 			message: " 유저 정보 삭제 작업중",
 		});
 	} catch (error) {
 		return res.status(500).json({
-			success: false,
+			response: false,
 			error: error,
 		});
 	}

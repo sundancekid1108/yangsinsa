@@ -80,21 +80,21 @@ storeRouter.post("/createstore", async (req, res) => {
 
 		await newStore.save().then((store) => {
 			return res.status(200).json({
-				success: true,
+				response: true,
 
 				store,
 			});
 		});
 	} catch (error) {
 		return res.status(500).json({
-			success: false,
+			response: false,
 			error,
 		});
 	}
 });
 
 // 상점 리스트 조회
-storeRouter.get("/storelist",  async (req, res) => {
+storeRouter.get("/storelist", async (req, res) => {
 	try {
 		const storeList = await Store.find().sort("-createdDate").exec();
 		return res.status(200).json({
@@ -103,7 +103,7 @@ storeRouter.get("/storelist",  async (req, res) => {
 		});
 	} catch (error) {
 		return res.status(500).json({
-			success: false,
+			response: false,
 			error: error,
 		});
 	}
@@ -132,30 +132,30 @@ storeRouter.post("/searchstore", async (req, res) => {
 		});
 	} catch (error) {
 		return res.status(500).json({
-			success: false,
+			response: false,
 			error: error,
 		});
 	}
 });
 
-storeRouter.get('/storedetail/:storeid', async (req, res) => {
+storeRouter.get("/storedetail/:storeid", async (req, res) => {
 	try {
 		const { storeId } = req.params.storeid;
 		const store = await Store.findById(storeId);
 		if (store) {
 			return res.status(200).json({
-				success: true,
+				response: true,
 				store,
 			});
 		} else {
 			return res.status(500).json({
-			success: false,
-			error: "상점 정보 없음",
-		});
+				response: false,
+				error: "상점 정보 없음",
+			});
 		}
 	} catch (error) {
 		return res.status(500).json({
-			success: false,
+			response: false,
 			error: error,
 		});
 	}
@@ -168,13 +168,13 @@ storeRouter.delete("/deletestore/:storeId", async (req, res) => {
 		const deleteStore = await Store.findByIdAndDelete(storeId);
 		if (deleteStore) {
 			return res.status(200).json({
-				success: true,
+				response: true,
 				message: "상점 삭제 성공",
 			});
 		}
 	} catch (error) {
 		return res.status(500).json({
-			success: false,
+			response: false,
 			error: error,
 		});
 	}

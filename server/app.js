@@ -1,6 +1,7 @@
 import express from "express";
 import cors from "cors";
-import dotenv from 'dotenv';
+import dotenv from 'dotenv'
+import bodyParser from "body-parser";
 import passport from "passport";
 import dbConnect from './database/config.js';
 import keys from "./config/keys/keys.js";
@@ -10,11 +11,20 @@ dotenv.config();
 
 const PORT = keys.port
 
+
+
 const app = express();
 
-app.use(express.urlencoded({ extended: true }));
-app.use(express.json());
-app.use(cors({credentials: true}));
+app.use(cors({origin: '*' , credentials: true}));
+
+
+
+app.use(bodyParser.json())
+app.use(bodyParser.urlencoded({  extended: true }));
+
+
+
+
 
 
 app.listen(PORT, () => {

@@ -49,17 +49,15 @@ userAuthRouter.post("/login", async (req, res) => {
 			const token = generateToken(payload);
 			const refreshToken = generateRefreshToken();
 
-
 			//로그인시 refreshToken생성
 			await Refreshtoken.findOneAndUpdate(
-				{userId: storeAdmin.id}, /* query */
-				{userId: storeAdmin.id, refreshToken: refreshToken}, /* update */
-				{ upsert: true}, /* create if it doesn't exist */
+				{ userId: storeAdmin.id } /* query */,
+				{ userId: storeAdmin.id, refreshToken: refreshToken } /* update */,
+				{ upsert: true } /* create if it doesn't exist */
 			);
 
-
 			return res.status(200).json({
-				success: true,
+				response: true,
 				token: `Bearer ${token}`,
 				refreshToken: refreshToken,
 				user: {
@@ -71,14 +69,14 @@ userAuthRouter.post("/login", async (req, res) => {
 			});
 		} else {
 			return res.status(400).json({
-				success: false,
+				response: false,
 				error: "이메일, 패스워드를 확인해주세요.",
 			});
 		}
 	} catch (error) {
 		console.log(error);
 		return res.status(500).json({
-			success: false,
+			response: false,
 			error: error,
 		});
 	}
@@ -132,7 +130,7 @@ userAuthRouter.post("/register", async (req, res) => {
 		await newUser.save().then((user) => {
 			// console.log(user)
 			return res.status(200).json({
-				success: true,
+				response: true,
 				user: {
 					id: user.id,
 					email: user.email,
@@ -144,7 +142,7 @@ userAuthRouter.post("/register", async (req, res) => {
 	} catch (error) {
 		// console.log(error);
 		return res.status(500).json({
-			success: false,
+			response: false,
 			error: error,
 		});
 	}
@@ -156,7 +154,7 @@ userAuthRouter.post("/updateprofile", async (req, res) => {
 		const user = await User.findOne({ _id: updateUserInfo.id });
 		if (!user) {
 			return res.status(500).json({
-				success: false,
+				response: false,
 				error: "유저 정보를 찾을 수 없습니다.",
 			});
 		} else {
@@ -168,7 +166,7 @@ userAuthRouter.post("/updateprofile", async (req, res) => {
 				});
 				if (checkDuplicateEmailUser) {
 					return res.status(500).json({
-						success: false,
+						response: false,
 						error: "이미 등록된 이메일입니다.",
 					});
 				} else {
@@ -193,7 +191,7 @@ userAuthRouter.post("/updateprofile", async (req, res) => {
 				});
 				if (checkDuplicateUserName) {
 					return res.status(500).json({
-						success: false,
+						response: false,
 						error: "이미 등록된 유저명입니다.",
 					});
 				} else {
@@ -203,7 +201,7 @@ userAuthRouter.post("/updateprofile", async (req, res) => {
 
 			await user.save().then((user) => {
 				return res.status(200).json({
-					success: true,
+					response: true,
 					user: {
 						id: user.id,
 						email: user.email,
@@ -215,7 +213,7 @@ userAuthRouter.post("/updateprofile", async (req, res) => {
 		}
 	} catch (error) {
 		return res.status(500).json({
-			success: false,
+			response: false,
 			error: error,
 		});
 	}
@@ -228,12 +226,12 @@ userAuthRouter.post("/deleteprofile", async (req, res) => {
 		// 2. 주문 목록 있으면 삭제 불가, 없으면 삭제 진행
 
 		return res.status(200).json({
-			success: true,
+			response: true,
 			message: " 유저 정보 삭제 작업중",
 		});
 	} catch (error) {
 		return res.status(500).json({
-			success: false,
+			response: false,
 			error: error,
 		});
 	}
