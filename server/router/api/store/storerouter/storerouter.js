@@ -1,9 +1,9 @@
-import express from "express";
-import Store from "../../../../database/model/store/store.js";
+import express from 'express';
+import Store from '../../../../database/model/store/store.js';
 const storeRouter = express.Router();
 
 // 상점 등록
-storeRouter.post("/createstore", async (req, res) => {
+storeRouter.post('/createstore', async (req, res) => {
 	try {
 		const {
 			storeName,
@@ -21,24 +21,23 @@ storeRouter.post("/createstore", async (req, res) => {
 			!businessRegistrationCode
 		) {
 			return res.status(400).json({
-				error: "필수 필드를 입력해주세요.",
+				error: '필수 필드를 입력해주세요.',
 			});
 		}
-		console.log(businessRegistrationCode.length);
 
 		if (
 			businessRegistrationCode.length > 10 ||
 			businessRegistrationCode.length < 10
 		) {
 			return res.status(400).json({
-				error: "사업자 등록 번호는 10자리 입니다.",
+				error: '사업자 등록 번호는 10자리 입니다.',
 			});
 		}
 
 		const duplicateStoreName = await Store.findOne({ storeName });
 		if (duplicateStoreName) {
 			return res.status(400).json({
-				error: "이미 등록된 상점입니다.",
+				error: '이미 등록된 상점입니다.',
 			});
 		}
 
@@ -46,7 +45,7 @@ storeRouter.post("/createstore", async (req, res) => {
 
 		if (duplicateStoreEmail) {
 			return res.status(400).json({
-				error: "이미 등록된 이메일입니다.",
+				error: '이미 등록된 이메일입니다.',
 			});
 		}
 
@@ -56,7 +55,7 @@ storeRouter.post("/createstore", async (req, res) => {
 
 		if (duplicateStorePhoneNumber) {
 			return res.status(400).json({
-				error: "이미 등록된 전화번호입니다.",
+				error: '이미 등록된 전화번호입니다.',
 			});
 		}
 
@@ -66,7 +65,7 @@ storeRouter.post("/createstore", async (req, res) => {
 
 		if (duplicateBusinesssRegistrationCode) {
 			return res.status(400).json({
-				error: "이미 등록된 사업자 등록번호입니다.",
+				error: '이미 등록된 사업자 등록번호입니다.',
 			});
 		}
 
@@ -94,9 +93,9 @@ storeRouter.post("/createstore", async (req, res) => {
 });
 
 // 상점 리스트 조회
-storeRouter.get("/storelist", async (req, res) => {
+storeRouter.get('/storelist', async (req, res) => {
 	try {
-		const storeList = await Store.find().sort("-createdDate").exec();
+		const storeList = await Store.find().sort('-createdDate').exec();
 		return res.status(200).json({
 			message: true,
 			storeList,
@@ -110,11 +109,11 @@ storeRouter.get("/storelist", async (req, res) => {
 });
 
 // 상점 검색
-storeRouter.post("/searchstore", async (req, res) => {
+storeRouter.post('/searchstore', async (req, res) => {
 	try {
 		const { searchquery } = req.query;
 
-		const regex = new RegExp(searchquery, "i");
+		const regex = new RegExp(searchquery, 'i');
 
 		const storeList = await Store.find({
 			$or: [
@@ -124,7 +123,7 @@ storeRouter.post("/searchstore", async (req, res) => {
 				{ businessRegistrationCode: { $regex: regex } },
 			],
 		})
-			.sort("-createdDate")
+			.sort('-createdDate')
 			.exec();
 
 		return res.status(200).json({
@@ -138,7 +137,7 @@ storeRouter.post("/searchstore", async (req, res) => {
 	}
 });
 
-storeRouter.get("/storedetail/:storeid", async (req, res) => {
+storeRouter.get('/storedetail/:storeid', async (req, res) => {
 	try {
 		const { storeId } = req.params.storeid;
 		const store = await Store.findById(storeId);
@@ -150,7 +149,7 @@ storeRouter.get("/storedetail/:storeid", async (req, res) => {
 		} else {
 			return res.status(500).json({
 				response: false,
-				error: "상점 정보 없음",
+				error: '상점 정보 없음',
 			});
 		}
 	} catch (error) {
@@ -162,14 +161,14 @@ storeRouter.get("/storedetail/:storeid", async (req, res) => {
 });
 
 /// 상점 삭제
-storeRouter.delete("/deletestore/:storeId", async (req, res) => { 
-	try { 
-		const {storeId} = req.params.storeId;
+storeRouter.delete('/deletestore/:storeId', async (req, res) => {
+	try {
+		const { storeId } = req.params.storeId;
 		const deleteStore = await Store.findByIdAndDelete(storeId);
 		if (deleteStore) {
 			return res.status(200).json({
 				response: true,
-				message: "상점 삭제 성공",
+				message: '상점 삭제 성공',
 			});
 		}
 	} catch (error) {
@@ -178,11 +177,6 @@ storeRouter.delete("/deletestore/:storeId", async (req, res) => {
 			error: error,
 		});
 	}
-})
-
-
-	
-
-
+});
 
 export default storeRouter;

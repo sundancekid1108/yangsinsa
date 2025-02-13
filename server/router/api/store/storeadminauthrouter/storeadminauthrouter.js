@@ -1,24 +1,28 @@
-import express from "express";
-import bcrypt from "bcryptjs";
-import jwt from "jsonwebtoken";
-import crypto from "crypto";
-import passport from "passport";
-import StoreAdmin from "../../../../database/model/storeadmin/storeadmin.js";
-import Refreshtoken from "../../../../database/model/refreshtoken/refreshtoken.js";
-import keys from "../../../../config/keys/keys.js";
-import constants from "../../../../constants/constants.js";
-import {generateToken, generateRefreshToken} from '../../../../utils/generatetoken/generatetoken.js';
+import express from 'express';
+import bcrypt from 'bcryptjs';
+import jwt from 'jsonwebtoken';
+import crypto from 'crypto';
+import passport from 'passport';
+import StoreAdmin from '../../../../database/model/storeadmin/storeadmin.js';
+import Refreshtoken from '../../../../database/model/refreshtoken/refreshtoken.js';
+import keys from '../../../../config/keys/keys.js';
+import constants from '../../../../constants/constants.js';
+import {
+	generateToken,
+	generateRefreshToken,
+} from '../../../../utils/generatetoken/generatetoken.js';
+import userAuthRouter from '../../user/userauthrouter/userauthrouter.js';
 
 const storeadminauthrouter = express.Router();
 
-storeadminauthrouter.post("/login", async (req, res) => {
+storeadminauthrouter.post('/login', async (req, res) => {
 	try {
 		const { userName, password } = req.body;
 
 		// 필수 필드 체크
 		if (!userName || !password) {
 			return res.status(400).json({
-				error: "필수 필드를 입력해주세요.",
+				error: '필수 필드를 입력해주세요.',
 			});
 		}
 		const storeAdmin = await StoreAdmin.findOne({ userName });
@@ -26,12 +30,15 @@ storeadminauthrouter.post("/login", async (req, res) => {
 		//유저 등록 체크
 		if (!storeAdmin) {
 			return res.status(400).json({
-				error: "등록되지 않은 유저입니다.",
+				error: '등록되지 않은 유저입니다.',
 			});
 		}
 
 		//비밀번호 체크
-		const passwordMatch = await bcrypt.compare(password, storeAdmin.password);
+		const passwordMatch = await bcrypt.compare(
+			password,
+			storeAdmin.password,
+		);
 
 		if (passwordMatch) {
 			const payload = {
@@ -46,8 +53,11 @@ storeadminauthrouter.post("/login", async (req, res) => {
 			//로그인시 refreshToken생성
 			await Refreshtoken.findOneAndUpdate(
 				{ userId: storeAdmin.id } /* query */,
-				{ userId: storeAdmin.id, refreshToken: refreshToken } /* update */,
-				{ upsert: true } /* create if it doesn't exist */
+				{
+					userId: storeAdmin.id,
+					refreshToken: refreshToken,
+				} /* update */,
+				{ upsert: true } /* create if it doesn't exist */,
 			);
 
 			return res.status(200).json({
@@ -62,7 +72,7 @@ storeadminauthrouter.post("/login", async (req, res) => {
 		} else {
 			return res.status(400).json({
 				response: false,
-				error: "이메일, 패스워드를 확인해주세요.",
+				error: '이메일, 패스워드를 확인해주세요.',
 			});
 		}
 	} catch (error) {
@@ -73,7 +83,7 @@ storeadminauthrouter.post("/login", async (req, res) => {
 	}
 });
 
-storeadminauthrouter.post("/register", async (req, res) => {
+storeadminauthrouter.post('/register', async (req, res) => {
 	try {
 		const { userName, password, firstName, lastName, phoneNumber, email } =
 			req.body;
@@ -87,7 +97,7 @@ storeadminauthrouter.post("/register", async (req, res) => {
 			!email
 		) {
 			return res.status(400).json({
-				error: "필수 필드를 입력해주세요.",
+				error: '필수 필드를 입력해주세요.',
 			});
 		}
 		// 유저명 중복 체크
@@ -97,7 +107,7 @@ storeadminauthrouter.post("/register", async (req, res) => {
 			});
 			if (dupulicateUserName) {
 				return res.status(400).json({
-					error: "이미 등록된 유저명입니다.",
+					error: '이미 등록된 유저명입니다.',
 				});
 			}
 		}
@@ -109,7 +119,7 @@ storeadminauthrouter.post("/register", async (req, res) => {
 			});
 			if (dupulicatestoreAdminPhoneNumber) {
 				return res.status(400).json({
-					error: "이미 등록된 전화번호입니다.",
+					error: '이미 등록된 전화번호입니다.',
 				});
 			}
 		}
@@ -121,7 +131,7 @@ storeadminauthrouter.post("/register", async (req, res) => {
 			});
 			if (dupulicatestoreAdminEmail) {
 				return res.status(400).json({
-					error: "이미 등록된 이메일입니다.",
+					error: '이미 등록된 이메일입니다.',
 				});
 			}
 		}
@@ -160,13 +170,13 @@ storeadminauthrouter.post("/register", async (req, res) => {
 	}
 });
 
-storeadminauthrouter.post("/updateprofile", async (req, res) => {
+storeadminauthrouter.post('/updateprofile', async (req, res) => {
 	const updatestoreAdminInfo = req.body;
 	const storeAdmin = await StoreAdmin.findById(updatestoreAdminInfo.id);
 	if (!storeAdmin) {
 		return res.status(500).json({
 			response: false,
-			error: "유저 정보를 찾을 수 없습니다.",
+			error: '유저 정보를 찾을 수 없습니다.',
 		});
 	} else {
 		if (updatestoreAdminInfo.userName) {
@@ -176,7 +186,7 @@ storeadminauthrouter.post("/updateprofile", async (req, res) => {
 			if (duplicatestoreAdminName) {
 				return res.status(400).json({
 					response: false,
-					error: "이미 등록된 유저명입니다.",
+					error: '이미 등록된 유저명입니다.',
 				});
 			} else {
 				storeAdmin.userName = updatestoreAdminInfo.userName;
@@ -200,6 +210,24 @@ storeadminauthrouter.post("/updateprofile", async (req, res) => {
 			});
 		});
 	}
+});
+
+storeadminauthrouter.get('/updateaccessetoken', async (req, res) => {
+	const headers = req.headers;
+
+	const refreshToken = headers.cookie.split('refreshToken=')[1];
+
+	const payload = {
+		id: refreshToken.id,
+		userName: refreshToken.userName,
+		adminGrade: refreshToken.adminGrade,
+	};
+
+	const newAccessToken = generateToken(payload);
+	return res
+		.status(200)
+		.header('Authorization', `Bearer ${newAccessToken}`)
+		.json({ message: 'Access Token 재발급' });
 });
 
 export default storeadminauthrouter;

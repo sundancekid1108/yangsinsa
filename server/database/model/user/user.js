@@ -1,5 +1,5 @@
 import Mongoose from 'mongoose';
-import constants from '../../../constants/constants.js'
+import constants from '../../../constants/constants.js';
 import { type } from 'os';
 const Schema = Mongoose.Schema;
 
@@ -10,7 +10,7 @@ const userSchema = new Schema(
 			trim: true,
 			unique: true,
 			required: () => {
-				if (userSchema.provider === "email") {
+				if (userSchema.provider === 'email') {
 					return true;
 				} else {
 					return false;
@@ -20,8 +20,11 @@ const userSchema = new Schema(
 
 		provider: {
 			type: String,
-			default: constants.MAILPROVIDER.EMAIL,
-			enum: [constants.MAILPROVIDER.EMAIL, constants.MAILPROVIDER.GOOGLE],
+			default: constants.MAIL_PROVIDER.EMAIL,
+			enum: [
+				constants.MAIL_PROVIDER.EMAIL,
+				constants.MAIL_PROVIDER.GOOGLE,
+			],
 		},
 
 		password: {
@@ -43,6 +46,8 @@ const userSchema = new Schema(
 		lastName: {
 			type: String,
 			trim: true,
+
+
 		},
 
 		phoneNumber: {
@@ -61,14 +66,12 @@ const userSchema = new Schema(
 		grade: {
 			type: String,
 			enum: [
-				constants.GRADE.SILVER,
-				constants.GRADE.GOLD,
-				constants.GRADE.PLATINUM,
+				constants.USER_GRADE.SILVER,
+				constants.USER_GRADE.GOLD,
+				constants.USER_GRADE.PLATINUM,
 			],
-			default: constants.GRADE.SILVER,
+			default: constants.USER_GRADE.SILVER,
 		},
-
-
 
 		updatedDate: {
 			type: Date,
@@ -81,7 +84,7 @@ const userSchema = new Schema(
 		},
 	},
 	{ timestamps: true },
-	{ versionKey: false }
+	{ versionKey: false },
 );
 
 const User = Mongoose.model('User', userSchema);

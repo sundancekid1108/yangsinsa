@@ -1,25 +1,28 @@
-import express from "express";
-import bcrypt from "bcryptjs";
-import jwt from "jsonwebtoken";
-import crypto from "crypto";
-import Admin from "../../../../database/model/admin/admin.js";
-import Refreshtoken from "../../../../database/model/refreshtoken/refreshtoken.js";
-import keys from "../../../../config/keys/keys.js";
-import constants from "../../../../constants/constants.js";
-import {generateToken, generateRefreshToken} from '../../../../utils/generatetoken/generatetoken.js';
+import express from 'express';
+import bcrypt from 'bcryptjs';
+import jwt from 'jsonwebtoken';
+import crypto from 'crypto';
+import { v4 as uuidv4 } from 'uuid';
 
+import Admin from '../../../../database/model/admin/admin.js';
+import Refreshtoken from '../../../../database/model/refreshtoken/refreshtoken.js';
+import keys from '../../../../config/keys/keys.js';
+import constants from '../../../../constants/constants.js';
+import {
+	generateToken,
+	generateRefreshToken,
+} from '../../../../utils/generatetoken/generatetoken.js';
 
 const adminAuthRouter = express.Router();
 
-adminAuthRouter.post("/login", async (req, res) => {
+adminAuthRouter.post('/login', async (req, res) => {
 	try {
-		console.log(req.body);
 		const { userName, password } = req.body;
 
 		// 필수 필드 체크
 		if (!userName || !password) {
 			return res.status(400).json({
-				error: "필수 필드를 입력해주세요.",
+				error: '필수 필드를 입력해주세요.',
 			});
 		}
 
@@ -28,12 +31,15 @@ adminAuthRouter.post("/login", async (req, res) => {
 		//유저 등록 체크
 		if (!adminUser) {
 			return res.status(400).json({
-				error: "등록되지 않은 유저입니다.",
+				error: '등록되지 않은 유저입니다.',
 			});
 		}
 
 		// 비밀번호 체크
-		const passwordMatch = await bcrypt.compare(password, adminUser.password);
+		const passwordMatch = await bcrypt.compare(
+			password,
+			adminUser.password,
+		);
 
 		if (passwordMatch) {
 			const payload = {
@@ -45,26 +51,25 @@ adminAuthRouter.post("/login", async (req, res) => {
 			const token = generateToken(payload);
 			const refreshToken = generateRefreshToken(payload);
 
-			//로그인시 refreshToken생성
-			await Refreshtoken.findOneAndUpdate(
-				{ userId: adminUser.id } /* query */,
-				{ userId: adminUser.id, refreshToken: refreshToken } /* 업데이트 */,
-				{ upsert: true } /* 저장된 토큰 없으면 생성 */
-			);
+			return res
+				.status(200)
 
-			return res.status(200).json({
-				response: true,
-				token: `Bearer ${token}`,
-				adminUser: {
-					id: adminUser.id,
-					userName: adminUser.userName,
-					adminGrade: adminUser.adminGrade,
-				},
-			});
+				.cookie('refreshToken', refreshToken, {
+					httpOnly: true,
+				})
+				.header('Authorization', `Bearer ${token}`)
+				.json({
+					response: true,
+					adminUser: {
+						id: adminUser.id,
+						userName: adminUser.userName,
+						adminGrade: adminUser.adminGrade,
+					},
+				});
 		} else {
 			return res.status(400).json({
 				response: false,
-				error: "이메일, 패스워드를 확인해주세요.",
+				error: '이메일, 패스워드를 확인해주세요.',
 			});
 		}
 	} catch (error) {
@@ -75,13 +80,16 @@ adminAuthRouter.post("/login", async (req, res) => {
 	}
 });
 
-adminAuthRouter.post("/register", async (req, res) => {
+adminAuthRouter.post('/logout', async (req, res) => {});
+
+adminAuthRouter.post('/register', async (req, res) => {
 	try {
-		const { userName, password, firstName, lastName, phoneNumber } = req.body;
+		const { userName, password, firstName, lastName, phoneNumber } =
+			req.body;
 
 		// 필드 미입력 체크
 		if (!userName || !password || !firstName || !lastName || !phoneNumber) {
-			return res.status(400).json({ error: "필수 필드를 입력해주세요." });
+			return res.status(400).json({ error: '필수 필드를 입력해주세요.' });
 		}
 
 		// 유저명 중복 체크
@@ -90,7 +98,9 @@ adminAuthRouter.post("/register", async (req, res) => {
 				userName,
 			});
 			if (dupulicateUserName) {
-				return res.status(400).json({ error: "이미 등록된  유저명입니다." });
+				return res
+					.status(400)
+					.json({ error: '이미 등록된  유저명입니다.' });
 			}
 		}
 
@@ -100,7 +110,9 @@ adminAuthRouter.post("/register", async (req, res) => {
 				phoneNumber,
 			});
 			if (dupulicateAdminUserPhoneNumber) {
-				return res.status(400).json({ error: "이미 등록된 전화번호입니다." });
+				return res
+					.status(400)
+					.json({ error: '이미 등록된 전화번호입니다.' });
 			}
 		}
 
@@ -139,13 +151,13 @@ adminAuthRouter.post("/register", async (req, res) => {
 	}
 });
 
-adminAuthRouter.post("/login", async (req, res) => {
+adminAuthRouter.post('/login', async (req, res) => {
 	try {
 		const { userName, password } = req.body;
 
 		if (!userName || !password) {
 			return res.status(400).json({
-				error: "필수 필드를 입력해주세요.",
+				error: '필수 필드를 입력해주세요.',
 			});
 		}
 
@@ -153,11 +165,14 @@ adminAuthRouter.post("/login", async (req, res) => {
 
 		if (!adminUser) {
 			return res.status(400).json({
-				error: "등록되지 않은 유저입니다.",
+				error: '등록되지 않은 유저입니다.',
 			});
 		}
 
-		const passwordMatch = await bcrypt.compare(password, adminUser.password);
+		const passwordMatch = await bcrypt.compare(
+			password,
+			adminUser.password,
+		);
 
 		if (passwordMatch) {
 			const secret = keys.jwt.secret;
@@ -186,7 +201,7 @@ adminAuthRouter.post("/login", async (req, res) => {
 		} else {
 			return res.status(400).json({
 				response: false,
-				error: "아이디, 패스워드를 확인해주세요.",
+				error: '아이디, 패스워드를 확인해주세요.',
 			});
 		}
 	} catch (error) {
@@ -197,14 +212,14 @@ adminAuthRouter.post("/login", async (req, res) => {
 	}
 });
 
-adminAuthRouter.post("/updateprofile", async (req, res) => {
+adminAuthRouter.post('/updateprofile', async (req, res) => {
 	try {
 		const updateAdminUserInfo = req.body;
 		const adminUser = await Admin.findById(updateAdminUserInfo.id);
 		if (!adminUser) {
 			return res.status(500).json({
 				response: false,
-				error: "유저 정보를 찾을 수 없습니다.",
+				error: '유저 정보를 찾을 수 없습니다.',
 			});
 		} else {
 			// 패스워드 업데이트
@@ -223,7 +238,7 @@ adminAuthRouter.post("/updateprofile", async (req, res) => {
 				});
 				if (dupulicateAdminUserPhoneNumber) {
 					return res.status(400).json({
-						error: "이미 등록된 전화번호입니다.",
+						error: '이미 등록된 전화번호입니다.',
 					});
 				} else {
 					adminUser.phoneNumber = updateAdminUserInfo.phoneNumber;
@@ -251,7 +266,7 @@ adminAuthRouter.post("/updateprofile", async (req, res) => {
 	}
 });
 
-adminAuthRouter.post("/delete", async (req, res) => {
+adminAuthRouter.post('/deleteuserinfo', async (req, res) => {
 	try {
 		// 어드민  삭제
 		const { id } = req.body;
@@ -259,7 +274,7 @@ adminAuthRouter.post("/delete", async (req, res) => {
 
 		return res.status(200).json({
 			response: true,
-			message: " 유저 정보 삭제 작업중",
+			message: ' 유저 정보 삭제 작업중',
 		});
 	} catch (error) {
 		return res.status(500).json({
@@ -267,6 +282,24 @@ adminAuthRouter.post("/delete", async (req, res) => {
 			error: error,
 		});
 	}
+});
+
+adminAuthRouter.get('/updateaccessetoken', async (req, res) => {
+	const headers = req.headers;
+
+	const refreshToken = headers.cookie.split('refreshToken=')[1];
+
+	const payload = {
+		id: refreshToken.id,
+		userName: refreshToken.userName,
+		adminGrade: refreshToken.adminGrade,
+	};
+
+	const newAccessToken = generateToken(payload);
+	return res
+		.status(200)
+		.header('Authorization', `Bearer ${newAccessToken}`)
+		.json({ message: 'Access Token 재발급' });
 });
 
 export default adminAuthRouter;

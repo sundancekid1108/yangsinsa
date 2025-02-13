@@ -1,5 +1,5 @@
 import Mongoose from 'mongoose';
-import constants from '../../../constants/constants.js'
+import constants from '../../../constants/constants.js';
 const Schema = Mongoose.Schema;
 
 // Merchant Schema
@@ -21,13 +21,18 @@ const StoreSchema = new Schema({
 		type: String,
 	},
 
+	storeImg: {
+		type: String,
+	},
+
 	businessRegistrationCode: {
 		type: String,
+		default: null,
 	},
 
 	storeAddress: {
 		type: Schema.Types.ObjectId,
-		ref: "Address",
+		ref: 'Address',
 		default: null,
 	},
 
@@ -37,7 +42,7 @@ const StoreSchema = new Schema({
 	},
 	brand: {
 		type: Schema.Types.ObjectId,
-		ref: "Brand",
+		ref: 'Brand',
 		default: null,
 	},
 	status: {

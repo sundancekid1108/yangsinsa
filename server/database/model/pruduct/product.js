@@ -1,9 +1,15 @@
 import Mongoose from 'mongoose';
-import constants from '../../../constants/constants.js'
+import constants from '../../../constants/constants.js';
 const Schema = Mongoose.Schema;
 
 const productSchema = new Schema(
 	{
+		brand: {
+			type: Schema.Types.ObjectId,
+			ref: 'Brand',
+			default: null,
+		},
+
 		name: {
 			type: String,
 			trim: true,
@@ -12,7 +18,7 @@ const productSchema = new Schema(
 
 		slug: {
 			type: String,
-			slug: "name",
+			slug: 'name',
 			unique: true,
 		},
 
@@ -28,12 +34,6 @@ const productSchema = new Schema(
 			type: String,
 		},
 
-		brand: {
-			type: Schema.Types.ObjectId,
-			ref: "Brand",
-			default: null,
-		},
-
 		description: {
 			type: String,
 			trim: true,
@@ -44,11 +44,7 @@ const productSchema = new Schema(
 		price: {
 			type: Number,
 		},
-		brand: {
-			type: Schema.Types.ObjectId,
-			ref: "Brand",
-			default: null,
-		},
+
 		isActive: {
 			type: Boolean,
 			default: true,
@@ -64,7 +60,7 @@ const productSchema = new Schema(
 		},
 	},
 	{ timestamps: true },
-	{ versionKey: false }
+	{ versionKey: false },
 );
 
 const Product = Mongoose.model('Product', productSchema);

@@ -62,7 +62,16 @@ brandRouter.get("/brandlist", async (req, res, next) => {
 
 brandRouter.post("/searchbrand", authAdmin, async (req, res) => {
 	try {
-	} catch (error) {}
+		return res.json({
+			response: true,
+			message: "Search Brand",
+		});
+	} catch (error) {
+		return res.status(500).json({
+			response: false,
+			error: error,
+		});
+	}
 });
 
 brandRouter.get("/branddetail/:brandid", async (req, res) => {

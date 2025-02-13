@@ -1,28 +1,27 @@
 const constants = {
-    GRADE: {
-        SILVER: 'silver',
-        GOLD: 'gold',
-        PLATINUM: 'platinum'
-    },
+	USER_GRADE: {
+		SILVER: 'silver',
+		GOLD: 'gold',
+		PLATINUM: 'platinum',
+	},
 
-    MAILPROVIDER: {
-        EMAIL: 'email',
-        GOOGLE: 'google'
-    },
+	MAIL_PROVIDER: {
+		EMAIL: 'email',
+		GOOGLE: 'google',
+	},
 
-    STATUS: {
-        CANCELLED: "cancelled",
-        APPROVED: "approved",
-        HOLD: "hold"
-    },
+	STATUS: {
+		CANCELLED: 'cancelled',
+		APPROVED: 'approved',
+		HOLD: 'hold',
+	},
 
-    ADMIN_LEVEL: {
-        SUPER_ADMIN: 'superadmin',
-        ADMIN: 'admin'
-    },
+	ADMIN_LEVEL: {
+		SUPER_ADMIN: 'superadmin',
+		ADMIN: 'admin',
+	},
 
-
-    JWT_COOKIE: 'x-jwt-cookie'
+	JWT_COOKIE: 'x-jwt-cookie',
 };
 
-export default constants
+export default constants;

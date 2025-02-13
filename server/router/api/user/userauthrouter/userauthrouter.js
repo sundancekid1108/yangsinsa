@@ -1,26 +1,27 @@
-import express from "express";
-import bcrypt from "bcryptjs";
-import jwt from "jsonwebtoken";
-import crypto from "crypto";
-import passport from "passport";
-import User from "../../../../database/model/user/user.js";
-import keys from "../../../../config/keys/keys.js";
-import constants from "../../../../constants/constants.js";
+import express from 'express';
+import bcrypt from 'bcryptjs';
+import jwt from 'jsonwebtoken';
+import crypto from 'crypto';
+import passport from 'passport';
+import User from '../../../../database/model/user/user.js';
+import keys from '../../../../config/keys/keys.js';
+import constants from '../../../../constants/constants.js';
 import {
 	generateToken,
 	generateRefreshToken,
-} from "../../../../utils/generatetoken/generatetoken.js";
+} from '../../../../utils/generatetoken/generatetoken.js';
+import adminAuthRouter from '../../admin/adminauthrouter/adminauthrouter.js';
 
 const userAuthRouter = express.Router();
 
-userAuthRouter.post("/login", async (req, res) => {
+userAuthRouter.post('/login', async (req, res) => {
 	try {
 		const { email, password } = req.body;
 
 		/* 이메일, 패스워드 입력 확인 */
 		if (!email || !password) {
 			return res.status(400).json({
-				error: "이메일, 패스워드를 확인해주세요.",
+				error: '이메일, 패스워드를 확인해주세요.',
 			});
 		}
 
@@ -28,11 +29,11 @@ userAuthRouter.post("/login", async (req, res) => {
 
 		if (!user) {
 			return res.status(400).json({
-				error: "존재하지 않는 계정입니다.",
+				error: '존재하지 않는 계정입니다.',
 			});
 		} else if (user.provider !== constants.MAILPROVIDER.EMAIL) {
 			return res.status(400).json({
-				error: "구글 계정으로 로그인하셔야 합니다.",
+				error: '구글 계정으로 로그인하셔야 합니다.',
 			});
 		}
 
@@ -52,8 +53,11 @@ userAuthRouter.post("/login", async (req, res) => {
 			//로그인시 refreshToken생성
 			await Refreshtoken.findOneAndUpdate(
 				{ userId: storeAdmin.id } /* query */,
-				{ userId: storeAdmin.id, refreshToken: refreshToken } /* update */,
-				{ upsert: true } /* create if it doesn't exist */
+				{
+					userId: storeAdmin.id,
+					refreshToken: refreshToken,
+				} /* update */,
+				{ upsert: true } /* create if it doesn't exist */,
 			);
 
 			return res.status(200).json({
@@ -70,7 +74,7 @@ userAuthRouter.post("/login", async (req, res) => {
 		} else {
 			return res.status(400).json({
 				response: false,
-				error: "이메일, 패스워드를 확인해주세요.",
+				error: '이메일, 패스워드를 확인해주세요.',
 			});
 		}
 	} catch (error) {
@@ -82,34 +86,38 @@ userAuthRouter.post("/login", async (req, res) => {
 	}
 });
 
-userAuthRouter.post("/register", async (req, res) => {
+userAuthRouter.post('/register', async (req, res) => {
 	try {
 		// 이메일 회원가입 구현
 		const { email, userName, password } = req.body;
 
 		// 이메일 체크
 		if (!email) {
-			return res.status(400).json({ error: "이메일이 없습니다." });
+			return res.status(400).json({ error: '이메일이 없습니다.' });
 		} else {
 			const dupulicateEmailUser = await User.findOne({ email });
 			if (dupulicateEmailUser) {
-				return res.status(400).json({ error: "이미 등록된 이메일입니다." });
+				return res
+					.status(400)
+					.json({ error: '이미 등록된 이메일입니다.' });
 			}
 		}
 
 		// 유저명 체크
 		if (!userName) {
-			return res.status(400).json({ error: "유저명이 없습니다." });
+			return res.status(400).json({ error: '유저명이 없습니다.' });
 		} else {
 			const dupulicateUserName = await User.findOne({ userName });
 			if (dupulicateUserName) {
-				return res.status(400).json({ error: "이미 등록된  유저명입니다." });
+				return res
+					.status(400)
+					.json({ error: '이미 등록된  유저명입니다.' });
 			}
 		}
 
 		// 비밀번호 필드 체크
 		if (!password) {
-			return res.status(400).json({ error: "비밀번호가 없습니다." });
+			return res.status(400).json({ error: '비밀번호가 없습니다.' });
 		}
 
 		const newUser = new User({
@@ -148,14 +156,14 @@ userAuthRouter.post("/register", async (req, res) => {
 	}
 });
 
-userAuthRouter.post("/updateprofile", async (req, res) => {
+userAuthRouter.post('/updateprofile', async (req, res) => {
 	try {
 		const updateUserInfo = req.body;
 		const user = await User.findOne({ _id: updateUserInfo.id });
 		if (!user) {
 			return res.status(500).json({
 				response: false,
-				error: "유저 정보를 찾을 수 없습니다.",
+				error: '유저 정보를 찾을 수 없습니다.',
 			});
 		} else {
 			// 이메일 업데이트
@@ -167,7 +175,7 @@ userAuthRouter.post("/updateprofile", async (req, res) => {
 				if (checkDuplicateEmailUser) {
 					return res.status(500).json({
 						response: false,
-						error: "이미 등록된 이메일입니다.",
+						error: '이미 등록된 이메일입니다.',
 					});
 				} else {
 					user.email = updateUserInfo.email;
@@ -192,7 +200,7 @@ userAuthRouter.post("/updateprofile", async (req, res) => {
 				if (checkDuplicateUserName) {
 					return res.status(500).json({
 						response: false,
-						error: "이미 등록된 유저명입니다.",
+						error: '이미 등록된 유저명입니다.',
 					});
 				} else {
 					user.userName = updateUserInfo.userName;
@@ -219,7 +227,7 @@ userAuthRouter.post("/updateprofile", async (req, res) => {
 	}
 });
 
-userAuthRouter.post("/deleteprofile", async (req, res) => {
+userAuthRouter.post('/deleteprofile', async (req, res) => {
 	try {
 		// 유저 삭제
 		// 1. 유저 주문 목록 체크
@@ -227,7 +235,7 @@ userAuthRouter.post("/deleteprofile", async (req, res) => {
 
 		return res.status(200).json({
 			response: true,
-			message: " 유저 정보 삭제 작업중",
+			message: ' 유저 정보 삭제 작업중',
 		});
 	} catch (error) {
 		return res.status(500).json({
@@ -235,6 +243,24 @@ userAuthRouter.post("/deleteprofile", async (req, res) => {
 			error: error,
 		});
 	}
+});
+
+userAuthRouter.get('/updateaccessetoken', async (req, res) => {
+	const headers = req.headers;
+
+	const refreshToken = headers.cookie.split('refreshToken=')[1];
+
+	const payload = {
+		id: refreshToken.id,
+		userName: refreshToken.userName,
+		adminGrade: refreshToken.adminGrade,
+	};
+
+	const newAccessToken = generateToken(payload);
+	return res
+		.status(200)
+		.header('Authorization', `Bearer ${newAccessToken}`)
+		.json({ message: 'Access Token 재발급' });
 });
 
 export default userAuthRouter;

@@ -1,5 +1,5 @@
 import Mongoose from 'mongoose';
-import constants from '../../../constants/constants.js'
+import constants from '../../../constants/constants.js';
 const Schema = Mongoose.Schema;
 
 const AdminSchema = new Schema(
@@ -35,13 +35,16 @@ const AdminSchema = new Schema(
 
 		adminGrade: {
 			type: String,
-			enum: [constants.ADMIN_LEVEL.ADMIN, constants.ADMIN_LEVEL.SUPER_ADMIN],
+			enum: [
+				constants.ADMIN_LEVEL.ADMIN,
+				constants.ADMIN_LEVEL.SUPER_ADMIN,
+			],
 			default: constants.ADMIN_LEVEL.ADMIN,
 		},
 
 		avatar: {
 			type: String,
-			default: "",
+			default: '',
 		},
 		updatedDate: {
 			type: Date,
@@ -54,7 +57,7 @@ const AdminSchema = new Schema(
 		},
 	},
 	{ timestamps: true },
-	{ versionKey: false }
+	{ versionKey: false },
 );
 
 const Admin = Mongoose.model('Admin', AdminSchema);
