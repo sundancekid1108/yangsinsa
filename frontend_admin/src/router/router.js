@@ -1,5 +1,5 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { BrowserRouter, Routes, Route, useRoutes } from 'react-router-dom'
+import { BrowserRouter, Routes, Route, useRoutes, Navigate} from 'react-router-dom'
 import Login from '../pages/login/login.jsx';
 import Home from '../pages/home/home.jsx';
 import Profile from "../pages/profile/profile";
@@ -11,6 +11,7 @@ const Router = () => {
 			{
 				path: "/",
 				element: <Home />,
+
 			},
 			{
 				path: "/login",

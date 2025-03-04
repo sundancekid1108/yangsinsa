@@ -43,7 +43,7 @@ axiosInstance.interceptors.response.use(
 				console.log(response);
 				const headers = response.headers;
 				const newAccessToken = headers.authorization;
-				console.log(newAccessToken);
+				// console.log(newAccessToken);
 				localStorage.setItem('token', newAccessToken);
 				originalRequest.headers.authorization = newAccessToken;
 				return axiosInstance(originalRequest);
@@ -53,8 +53,10 @@ axiosInstance.interceptors.response.use(
 		}
 
 		if (error.response && error.response.status === 403) {
+			const navigate = useNavigate();
 			console.log('인터셉터 테스트, 토큰 만료');
 			localStorage.removeItem('token');
+			navigate('/login');
 			return Promise.reject(error);
 		}
 	},

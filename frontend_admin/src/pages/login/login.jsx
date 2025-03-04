@@ -3,14 +3,14 @@ import { Outlet, useLocation, useNavigate, redirect } from 'react-router-dom';
 import { useForm } from 'react-hook-form';
 import Input from '../../components/input/input.jsx';
 import axiosInstance from '../../utils/axios';
+import { useAuth } from '../../utils/useAuth';
 
 const Login = () => {
 	const navigate = useNavigate();
-
+	const { isAuthenticated, userLogin } = useAuth();
 	//Token 보유시 리다이렉트
 	useEffect(() => {
-		const token = localStorage.getItem('token');
-		if (token) {
+		if (isAuthenticated) {
 			navigate('/');
 		}
 	});
@@ -24,6 +24,7 @@ const Login = () => {
 
 	const axiosLoginTest = async (data) => {
 		const test_URL = '/admin/auth/login';
+
 		try {
 			const response = await axiosInstance.post(test_URL, data, {
 				headers: {
@@ -32,9 +33,9 @@ const Login = () => {
 			});
 
 			if (response.status === 200) {
-				// console.log(response.data)
-				localStorage.setItem('token', response.data.token);
-
+				console.log(response);
+				localStorage.setItem('token', response.headers.authorization);
+				userLogin();
 				navigate('/');
 			}
 		} catch (error) {
@@ -95,6 +96,7 @@ const Login = () => {
 			</div>
 		</div>
 	);
+	i;
 };
 
 export default Login;
