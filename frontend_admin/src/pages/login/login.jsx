@@ -7,7 +7,7 @@ import { useAuth } from '../../utils/useAuth';
 
 const Login = () => {
 	const navigate = useNavigate();
-	const { isAuthenticated, userLogin } = useAuth();
+	const { isAuthenticated, setLogin } = useAuth();
 	//Token 보유시 리다이렉트
 	useEffect(() => {
 		if (isAuthenticated) {
@@ -35,7 +35,7 @@ const Login = () => {
 			if (response.status === 200) {
 				console.log(response);
 				localStorage.setItem('token', response.headers.authorization);
-				userLogin();
+				setLogin();
 				navigate('/');
 			}
 		} catch (error) {
@@ -46,7 +46,6 @@ const Login = () => {
 	console.log('errors', errors);
 
 	const submitForm = (data) => {
-		console.log(data);
 		axiosLoginTest(data);
 	};
 

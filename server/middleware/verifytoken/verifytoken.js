@@ -28,9 +28,11 @@ const verifyToken = async (req, res, next) => {
 			next();
 		} else {
 			if (validateRefreshToken) {
+				console.log("'Access Token 만료'");
 				return res.status(401).json({ error: 'Access Token 만료' });
 			} else {
-				// 5. accesstoken, refreshToken 만료> 로그아웃
+				// accesstoken, refreshToken 만료> 로그아웃
+				console.log("'Access Token, Refresh Token 만료'");
 				return res
 					.status(403)
 					.json({ error: 'Access Token, Refresh Token 만료' });

@@ -10,7 +10,6 @@ import {
 	generateToken,
 	generateRefreshToken,
 } from '../../../../utils/generatetoken/generatetoken.js';
-import adminAuthRouter from '../../admin/adminauthrouter/adminauthrouter.js';
 
 const userAuthRouter = express.Router();
 
@@ -26,12 +25,13 @@ userAuthRouter.post('/login', async (req, res) => {
 		}
 
 		const user = await User.findOne({ email });
+		console.log(user);
 
 		if (!user) {
 			return res.status(400).json({
 				error: '존재하지 않는 계정입니다.',
 			});
-		} else if (user.provider !== constants.MAILPROVIDER.EMAIL) {
+		} else if (user.provider !== constants.MAIL_PROVIDER.EMAIL) {
 			return res.status(400).json({
 				error: '구글 계정으로 로그인하셔야 합니다.',
 			});
@@ -48,29 +48,24 @@ userAuthRouter.post('/login', async (req, res) => {
 			};
 
 			const token = generateToken(payload);
-			const refreshToken = generateRefreshToken();
+			const refreshToken = generateRefreshToken(payload);
 
-			//로그인시 refreshToken생성
-			await Refreshtoken.findOneAndUpdate(
-				{ userId: storeAdmin.id } /* query */,
-				{
-					userId: storeAdmin.id,
-					refreshToken: refreshToken,
-				} /* update */,
-				{ upsert: true } /* create if it doesn't exist */,
-			);
+			return res
+				.status(200)
 
-			return res.status(200).json({
-				response: true,
-				token: `Bearer ${token}`,
-				refreshToken: refreshToken,
-				user: {
-					id: user.id,
-					email: user.email,
-					userName: user.userName,
-					role: user.role,
-				},
-			});
+				.cookie('refreshToken', refreshToken, {
+					httpOnly: true,
+				})
+				.header('Authorization', `Bearer ${token}`)
+				.json({
+					response: true,
+					user: {
+						id: user.id,
+						email: user.email,
+						userName: user.userName,
+						role: user.role,
+					},
+				});
 		} else {
 			return res.status(400).json({
 				response: false,

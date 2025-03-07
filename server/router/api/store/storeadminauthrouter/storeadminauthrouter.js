@@ -48,27 +48,24 @@ storeadminauthrouter.post('/login', async (req, res) => {
 			};
 
 			const token = generateToken(payload);
-			const refreshToken = generateRefreshToken({});
+			const refreshToken = generateRefreshToken(payload);
 
-			//로그인시 refreshToken생성
-			await Refreshtoken.findOneAndUpdate(
-				{ userId: storeAdmin.id } /* query */,
-				{
-					userId: storeAdmin.id,
-					refreshToken: refreshToken,
-				} /* update */,
-				{ upsert: true } /* create if it doesn't exist */,
-			);
+			return res
+				.status(200)
 
-			return res.status(200).json({
-				response: true,
-				token: `Bearer ${token}`,
-				storeAdmin: {
-					id: storeAdmin.id,
-					userName: storeAdmin.userName,
-					adminGrade: storeAdmin.adminGrade,
-				},
-			});
+				.cookie('refreshToken', refreshToken, {
+					httpOnly: true,
+				})
+				.header('Authorization', `Bearer ${token}`)
+				.json({
+					response: true,
+
+					storeAdmin: {
+						id: storeAdmin.id,
+						userName: storeAdmin.userName,
+						adminGrade: storeAdmin.adminGrade,
+					},
+				});
 		} else {
 			return res.status(400).json({
 				response: false,

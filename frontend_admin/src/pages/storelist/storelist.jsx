@@ -6,22 +6,22 @@ const StoreList = () => {
 	const [storeList, setStoreList] = useState(null);
 
 	useEffect(() => {
-		getStoreList().then((result) => {
-			const data = result.data.storeList;
-			// console.log('data', data);
-			setStoreList(data);
-		});
+		const storeListData = getStoreList();
 	}, []);
-	console.log(storeList);
+	console.log('storeList', storeList);
 
 	return (
 		<div>
 			<div>StoreList</div>
 			<div>
 				<ol>
-					{storeList.map((store) => (
-						<div key={store._id}>{store.storeName}</div>
-					))}
+					{storeList ? (
+						storeList.map((store) => (
+							<div key={store._id}>{store.storeName}</div>
+						))
+					) : (
+						<div>No list</div>
+					)}
 				</ol>
 			</div>
 		</div>
