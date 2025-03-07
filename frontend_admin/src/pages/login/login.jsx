@@ -3,6 +3,7 @@ import { Outlet, useLocation, useNavigate, redirect } from 'react-router-dom';
 import { useForm } from 'react-hook-form';
 import Input from '../../components/input/input.jsx';
 import axiosInstance from '../../utils/axios';
+import { userLogin } from '../../api/user/user.js';
 import { useAuth } from '../../utils/useAuth';
 
 const Login = () => {
@@ -22,36 +23,21 @@ const Login = () => {
 		formState: { errors },
 	} = useForm({ mode: 'onSubmit' });
 
-	const axiosLoginTest = async (data) => {
-		const test_URL = '/admin/auth/login';
-
+	const submitForm = async (data) => {
 		try {
-			const response = await axiosInstance.post(test_URL, data, {
-				headers: {
-					'Content-Type': 'application/json',
-				},
-			});
-
-			if (response.status === 200) {
-				console.log(response);
-				localStorage.setItem('token', response.headers.authorization);
+			const res = await userLogin(data);
+			if (res && res.status === 200) {
 				setLogin();
 				navigate('/');
 			}
 		} catch (error) {
-			console.log('error.response', error.response);
+			console.log(error);
 		}
-	};
-
-	console.log('errors', errors);
-
-	const submitForm = (data) => {
-		axiosLoginTest(data);
 	};
 
 	return (
 		<div>
-			로그인
+			어드민 로그인
 			<div>
 				<form
 					onSubmit={handleSubmit(submitForm)}

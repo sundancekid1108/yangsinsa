@@ -2,10 +2,18 @@ import { React, useEffect, useRef } from 'react';
 import { Outlet, useLocation, useNavigate, redirect } from 'react-router-dom';
 import { useForm } from 'react-hook-form';
 import { userLogin } from '../../api/user/user.js';
+import { useAuth } from '../../utils/useAuth';
 import Input from '../../components/input/input.jsx';
 
 const Login = () => {
 	const navigate = useNavigate();
+	const { isAuthenticated, setLogin } = useAuth();
+	//Token 보유시 리다이렉트
+	useEffect(() => {
+		if (isAuthenticated) {
+			navigate('/');
+		}
+	});
 
 	const {
 		register,
@@ -14,13 +22,11 @@ const Login = () => {
 		formState: { errors },
 	} = useForm({ mode: 'onSubmit' });
 
-	console.log('errors', errors);
-
 	const submitForm = async (data) => {
 		try {
-			const result = await userLogin(data);
-			console.log(result);
-			if (result && result.status === 200) {
+			const res = await userLogin(data);
+			if (res && res.status === 200) {
+				setLogin();
 				navigate('/');
 			}
 		} catch (error) {

@@ -3,55 +3,40 @@ import { Outlet, useLocation, useNavigate, redirect } from 'react-router-dom';
 import { useForm } from 'react-hook-form';
 import Input from '../../components/input/input.jsx';
 import axiosInstance from '../../utils/axios';
+import { userLogin } from '../../api/user/user.js';
+import { useAuth } from '../../utils/useAuth';
 
 const Login = () => {
 	const navigate = useNavigate();
-
-	//Token 보유시 리다이렉트
-	// useEffect(() => {
-	// 	const token = localStorage.getItem('token');
-	// 	if (token) {
-	// 		navigate('/');
-	// 	}
-	// });
-
+	const { isAuthenticated, setLogin } = useAuth();
 	const {
 		register,
 		handleSubmit,
 		watch,
 		formState: { errors },
 	} = useForm({ mode: 'onSubmit' });
+	//Token 보유시 리다이렉트
+	useEffect(() => {
+		if (isAuthenticated) {
+			navigate('/');
+		}
+	});
 
-	const axiosLoginTest = async (data) => {
-		const test_URL = '/admin/auth/login';
-
+	const submitForm = async (data) => {
 		try {
-			const response = await axiosInstance.post(test_URL, data, {
-				headers: {
-					'Content-Type': 'application/json',
-				},
-			});
-
-			if (response.status === 200) {
-				console.log(response);
-				localStorage.setItem('token', response.headers.authorization);
+			const res = await userLogin(data);
+			if (res && res.status === 200) {
+				setLogin();
 				navigate('/');
 			}
 		} catch (error) {
-			console.log('error.response', error.response);
+			console.log(error);
 		}
-	};
-
-	console.log('errors', errors);
-
-	const submitForm = (data) => {
-		console.log(data);
-		axiosLoginTest(data);
 	};
 
 	return (
 		<div>
-			로그인
+			스토어 어드민 로그인
 			<div>
 				<form
 					onSubmit={handleSubmit(submitForm)}

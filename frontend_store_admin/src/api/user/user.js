@@ -1,6 +1,6 @@
 import axiosInstance from '../../utils/axios';
 
-export const login = async (data) => {
+export const userLogin = async (data) => {
 	const test_URL = '/store/auth/login';
 
 	try {
@@ -12,8 +12,10 @@ export const login = async (data) => {
 
 		if (response.status === 200) {
 			localStorage.setItem('token', response.headers.authorization);
+			return response;
 		}
 	} catch (error) {
 		console.log('error.response', error.response);
+		return error.response;
 	}
 };
