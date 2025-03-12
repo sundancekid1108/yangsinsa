@@ -17,12 +17,12 @@ const adminAuthRouter = express.Router();
 
 adminAuthRouter.post('/login', async (req, res) => {
 	try {
+		console.log(req.body);
 		const { userName, password } = req.body;
-
 		// 필수 필드 체크
 		if (!userName || !password) {
 			return res.status(400).json({
-				error: '필수 필드를 입력해주세요.',
+				message: '필수 필드를 확인해주세요.',
 			});
 		}
 
@@ -31,7 +31,7 @@ adminAuthRouter.post('/login', async (req, res) => {
 		//유저 등록 체크
 		if (!adminUser) {
 			return res.status(400).json({
-				error: '등록되지 않은 유저입니다.',
+				message: '등록되지 않은 유저입니다.',
 			});
 		}
 
@@ -69,13 +69,13 @@ adminAuthRouter.post('/login', async (req, res) => {
 		} else {
 			return res.status(400).json({
 				response: false,
-				error: '이메일, 패스워드를 확인해주세요.',
+				message: '이메일, 패스워드를 확인해주세요.',
 			});
 		}
 	} catch (error) {
 		return res.status(500).json({
 			response: false,
-			error: error,
+			message: error,
 		});
 	}
 });
@@ -84,12 +84,14 @@ adminAuthRouter.post('/logout', async (req, res) => {});
 
 adminAuthRouter.post('/register', async (req, res) => {
 	try {
-		const { userName, password, firstName, lastName, phoneNumber } =
-			req.body;
+		const { userName, password, koreanName, phoneNumber } = req.body;
+		console.log(req.body);
 
 		// 필드 미입력 체크
-		if (!userName || !password || !firstName || !lastName || !phoneNumber) {
-			return res.status(400).json({ error: '필수 필드를 입력해주세요.' });
+		if (!userName || !password || !koreanName || !phoneNumber) {
+			return res
+				.status(400)
+				.json({ message: '필수 필드를 입력해주세요.' });
 		}
 
 		// 유저명 중복 체크
@@ -100,7 +102,7 @@ adminAuthRouter.post('/register', async (req, res) => {
 			if (dupulicateUserName) {
 				return res
 					.status(400)
-					.json({ error: '이미 등록된  유저명입니다.' });
+					.json({ message: '이미 등록된  유저명입니다.' });
 			}
 		}
 
@@ -112,15 +114,14 @@ adminAuthRouter.post('/register', async (req, res) => {
 			if (dupulicateAdminUserPhoneNumber) {
 				return res
 					.status(400)
-					.json({ error: '이미 등록된 전화번호입니다.' });
+					.json({ message: '이미 등록된 전화번호입니다.' });
 			}
 		}
 
 		const newAdminUser = new Admin({
 			userName,
 			password,
-			firstName,
-			lastName,
+			koreanName,
 			phoneNumber,
 		});
 
@@ -146,68 +147,7 @@ adminAuthRouter.post('/register', async (req, res) => {
 	} catch (error) {
 		return res.status(500).json({
 			response: false,
-			error: error,
-		});
-	}
-});
-
-adminAuthRouter.post('/login', async (req, res) => {
-	try {
-		const { userName, password } = req.body;
-
-		if (!userName || !password) {
-			return res.status(400).json({
-				error: '필수 필드를 입력해주세요.',
-			});
-		}
-
-		const adminUser = await Admin.findOne({ userName });
-
-		if (!adminUser) {
-			return res.status(400).json({
-				error: '등록되지 않은 유저입니다.',
-			});
-		}
-
-		const passwordMatch = await bcrypt.compare(
-			password,
-			adminUser.password,
-		);
-
-		if (passwordMatch) {
-			const secret = keys.jwt.secret;
-			const tokenLife = keys.jwt.tokenLife;
-
-			const payload = {
-				id: adminUser.id,
-				email: adminUser.email,
-				userName: adminUser.userName,
-				role: adminUser.role,
-			};
-
-			const token = jwt.sign(payload, secret, { expiresIn: tokenLife });
-
-			return res.status(200).json({
-				response: true,
-				token: `Bearer ${token}`,
-				adminUser: {
-					id: adminUser.id,
-					firstName: adminUser.firstName,
-					lastName: adminUser.lastName,
-					phoneNumber: adminUser.phoneNumber,
-					adminGrade: adminUser.adminGrade,
-				},
-			});
-		} else {
-			return res.status(400).json({
-				response: false,
-				error: '아이디, 패스워드를 확인해주세요.',
-			});
-		}
-	} catch (error) {
-		return res.status(500).json({
-			response: false,
-			error: error,
+			message: error,
 		});
 	}
 });
@@ -219,7 +159,7 @@ adminAuthRouter.post('/updateprofile', async (req, res) => {
 		if (!adminUser) {
 			return res.status(500).json({
 				response: false,
-				error: '유저 정보를 찾을 수 없습니다.',
+				message: '유저 정보를 찾을 수 없습니다.',
 			});
 		} else {
 			// 패스워드 업데이트
@@ -238,7 +178,7 @@ adminAuthRouter.post('/updateprofile', async (req, res) => {
 				});
 				if (dupulicateAdminUserPhoneNumber) {
 					return res.status(400).json({
-						error: '이미 등록된 전화번호입니다.',
+						message: '이미 등록된 전화번호입니다.',
 					});
 				} else {
 					adminUser.phoneNumber = updateAdminUserInfo.phoneNumber;
@@ -261,7 +201,7 @@ adminAuthRouter.post('/updateprofile', async (req, res) => {
 	} catch (error) {
 		return res.status(500).json({
 			response: false,
-			error: error,
+			message: error,
 		});
 	}
 });
@@ -279,7 +219,7 @@ adminAuthRouter.post('/deleteuserinfo', async (req, res) => {
 	} catch (error) {
 		return res.status(500).json({
 			response: false,
-			error: error,
+			message: error,
 		});
 	}
 });

@@ -1,5 +1,5 @@
-import Mongoose from "mongoose";
-import constants from "../../../constants/constants.js";
+import Mongoose from 'mongoose';
+import constants from '../../../constants/constants.js';
 const Schema = Mongoose.Schema;
 
 const StoreAdminSchema = new Schema(
@@ -15,18 +15,18 @@ const StoreAdminSchema = new Schema(
 			type: String,
 			required: true,
 		},
+		koreanName: {
+			type: String,
+		},
 
 		firstName: {
 			type: String,
 			trim: true,
-			required: true,
 		},
 		lastName: {
 			type: String,
 			trim: true,
-			required: true,
 		},
-
 		phoneNumber: {
 			type: String,
 			unique: true,
@@ -42,7 +42,10 @@ const StoreAdminSchema = new Schema(
 
 		adminGrade: {
 			type: String,
-			enum: [constants.ADMIN_LEVEL.ADMIN, constants.ADMIN_LEVEL.SUPER_ADMIN],
+			enum: [
+				constants.ADMIN_LEVEL.ADMIN,
+				constants.ADMIN_LEVEL.SUPER_ADMIN,
+			],
 			default: constants.ADMIN_LEVEL.ADMIN,
 		},
 
@@ -61,8 +64,8 @@ const StoreAdminSchema = new Schema(
 		},
 	},
 	{ timestamps: true },
-	{ versionKey: false }
+	{ versionKey: false },
 );
 
-const StoreAdmin = Mongoose.model("StoreAdmin", StoreAdminSchema);
+const StoreAdmin = Mongoose.model('StoreAdmin', StoreAdminSchema);
 export default StoreAdmin;

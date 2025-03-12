@@ -15,16 +15,17 @@ const AdminSchema = new Schema(
 			type: String,
 			required: true,
 		},
+		koreanName: {
+			type: String,
+		},
 
 		firstName: {
 			type: String,
 			trim: true,
-			required: true,
 		},
 		lastName: {
 			type: String,
 			trim: true,
-			required: true,
 		},
 
 		phoneNumber: {

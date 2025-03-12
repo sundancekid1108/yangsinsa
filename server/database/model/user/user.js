@@ -39,6 +39,10 @@ const userSchema = new Schema(
 			unique: true,
 		},
 
+		koreanName: {
+			type: String,
+		},
+
 		firstName: {
 			type: String,
 			trim: true,
@@ -46,8 +50,6 @@ const userSchema = new Schema(
 		lastName: {
 			type: String,
 			trim: true,
-
-
 		},
 
 		phoneNumber: {

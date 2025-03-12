@@ -22,7 +22,7 @@ storeadminauthrouter.post('/login', async (req, res) => {
 		// 필수 필드 체크
 		if (!userName || !password) {
 			return res.status(400).json({
-				error: '필수 필드를 입력해주세요.',
+				message: '필수 필드를 입력해주세요.',
 			});
 		}
 		const storeAdmin = await StoreAdmin.findOne({ userName });
@@ -30,7 +30,7 @@ storeadminauthrouter.post('/login', async (req, res) => {
 		//유저 등록 체크
 		if (!storeAdmin) {
 			return res.status(400).json({
-				error: '등록되지 않은 유저입니다.',
+				message: '등록되지 않은 유저입니다.',
 			});
 		}
 
@@ -69,32 +69,24 @@ storeadminauthrouter.post('/login', async (req, res) => {
 		} else {
 			return res.status(400).json({
 				response: false,
-				error: '이메일, 패스워드를 확인해주세요.',
+				message: '이메일, 패스워드를 확인해주세요.',
 			});
 		}
 	} catch (error) {
 		return res.status(500).json({
 			response: false,
-			error: error,
+			message: error,
 		});
 	}
 });
 
 storeadminauthrouter.post('/register', async (req, res) => {
 	try {
-		const { userName, password, firstName, lastName, phoneNumber, email } =
-			req.body;
+		const { userName, password, koreanName, phoneNumber, email } = req.body;
 		// 필수 필드 체크
-		if (
-			!userName ||
-			!password ||
-			!firstName ||
-			!lastName ||
-			!phoneNumber ||
-			!email
-		) {
+		if (!userName || !password || !koreanName || !phoneNumber || !email) {
 			return res.status(400).json({
-				error: '필수 필드를 입력해주세요.',
+				message: '필수 필드를 입력해주세요.',
 			});
 		}
 		// 유저명 중복 체크
@@ -104,7 +96,7 @@ storeadminauthrouter.post('/register', async (req, res) => {
 			});
 			if (dupulicateUserName) {
 				return res.status(400).json({
-					error: '이미 등록된 유저명입니다.',
+					message: '이미 등록된 유저명입니다.',
 				});
 			}
 		}
@@ -116,7 +108,7 @@ storeadminauthrouter.post('/register', async (req, res) => {
 			});
 			if (dupulicatestoreAdminPhoneNumber) {
 				return res.status(400).json({
-					error: '이미 등록된 전화번호입니다.',
+					message: '이미 등록된 전화번호입니다.',
 				});
 			}
 		}
@@ -128,7 +120,7 @@ storeadminauthrouter.post('/register', async (req, res) => {
 			});
 			if (dupulicatestoreAdminEmail) {
 				return res.status(400).json({
-					error: '이미 등록된 이메일입니다.',
+					message: '이미 등록된 이메일입니다.',
 				});
 			}
 		}
@@ -136,8 +128,7 @@ storeadminauthrouter.post('/register', async (req, res) => {
 		const newstoreAdmin = new StoreAdmin({
 			userName,
 			password,
-			firstName,
-			lastName,
+			koreanName,
 			phoneNumber,
 			email,
 		});
@@ -162,7 +153,7 @@ storeadminauthrouter.post('/register', async (req, res) => {
 	} catch (error) {
 		return res.status(500).json({
 			response: false,
-			error: error,
+			message: error,
 		});
 	}
 });
@@ -173,7 +164,7 @@ storeadminauthrouter.post('/updateprofile', async (req, res) => {
 	if (!storeAdmin) {
 		return res.status(500).json({
 			response: false,
-			error: '유저 정보를 찾을 수 없습니다.',
+			message: '유저 정보를 찾을 수 없습니다.',
 		});
 	} else {
 		if (updatestoreAdminInfo.userName) {
@@ -183,7 +174,7 @@ storeadminauthrouter.post('/updateprofile', async (req, res) => {
 			if (duplicatestoreAdminName) {
 				return res.status(400).json({
 					response: false,
-					error: '이미 등록된 유저명입니다.',
+					message: '이미 등록된 유저명입니다.',
 				});
 			} else {
 				storeAdmin.userName = updatestoreAdminInfo.userName;

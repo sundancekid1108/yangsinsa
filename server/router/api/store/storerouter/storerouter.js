@@ -21,7 +21,7 @@ storeRouter.post('/createstore', async (req, res) => {
 			!businessRegistrationCode
 		) {
 			return res.status(400).json({
-				error: '필수 필드를 입력해주세요.',
+				message: '필수 필드를 입력해주세요.',
 			});
 		}
 
@@ -30,14 +30,14 @@ storeRouter.post('/createstore', async (req, res) => {
 			businessRegistrationCode.length < 10
 		) {
 			return res.status(400).json({
-				error: '사업자 등록 번호는 10자리 입니다.',
+				message: '사업자 등록 번호는 10자리 입니다.',
 			});
 		}
 
 		const duplicateStoreName = await Store.findOne({ storeName });
 		if (duplicateStoreName) {
 			return res.status(400).json({
-				error: '이미 등록된 상점입니다.',
+				message: '이미 등록된 상점입니다.',
 			});
 		}
 
@@ -45,7 +45,7 @@ storeRouter.post('/createstore', async (req, res) => {
 
 		if (duplicateStoreEmail) {
 			return res.status(400).json({
-				error: '이미 등록된 이메일입니다.',
+				message: '이미 등록된 이메일입니다.',
 			});
 		}
 
@@ -55,7 +55,7 @@ storeRouter.post('/createstore', async (req, res) => {
 
 		if (duplicateStorePhoneNumber) {
 			return res.status(400).json({
-				error: '이미 등록된 전화번호입니다.',
+				message: '이미 등록된 전화번호입니다.',
 			});
 		}
 
@@ -65,7 +65,7 @@ storeRouter.post('/createstore', async (req, res) => {
 
 		if (duplicateBusinesssRegistrationCode) {
 			return res.status(400).json({
-				error: '이미 등록된 사업자 등록번호입니다.',
+				message: '이미 등록된 사업자 등록번호입니다.',
 			});
 		}
 
@@ -103,7 +103,7 @@ storeRouter.get('/storelist', async (req, res) => {
 	} catch (error) {
 		return res.status(500).json({
 			response: false,
-			error: error,
+			message: error,
 		});
 	}
 });
@@ -132,7 +132,7 @@ storeRouter.post('/searchstore', async (req, res) => {
 	} catch (error) {
 		return res.status(500).json({
 			response: false,
-			error: error,
+			message: error,
 		});
 	}
 });
@@ -149,13 +149,13 @@ storeRouter.get('/storedetail/:storeid', async (req, res) => {
 		} else {
 			return res.status(500).json({
 				response: false,
-				error: '상점 정보 없음',
+				message: '상점 정보 없음',
 			});
 		}
 	} catch (error) {
 		return res.status(500).json({
 			response: false,
-			error: error,
+			message: error,
 		});
 	}
 });
@@ -174,7 +174,7 @@ storeRouter.delete('/deletestore/:storeId', async (req, res) => {
 	} catch (error) {
 		return res.status(500).json({
 			response: false,
-			error: error,
+			message: error,
 		});
 	}
 });

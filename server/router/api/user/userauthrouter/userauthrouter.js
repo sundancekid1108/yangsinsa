@@ -20,7 +20,7 @@ userAuthRouter.post('/login', async (req, res) => {
 		/* 이메일, 패스워드 입력 확인 */
 		if (!email || !password) {
 			return res.status(400).json({
-				error: '이메일, 패스워드를 확인해주세요.',
+				message: '이메일, 패스워드를 확인해주세요.',
 			});
 		}
 
@@ -29,11 +29,11 @@ userAuthRouter.post('/login', async (req, res) => {
 
 		if (!user) {
 			return res.status(400).json({
-				error: '존재하지 않는 계정입니다.',
+				message: '존재하지 않는 계정입니다.',
 			});
 		} else if (user.provider !== constants.MAIL_PROVIDER.EMAIL) {
 			return res.status(400).json({
-				error: '구글 계정으로 로그인하셔야 합니다.',
+				message: '구글 계정으로 로그인하셔야 합니다.',
 			});
 		}
 
@@ -69,14 +69,14 @@ userAuthRouter.post('/login', async (req, res) => {
 		} else {
 			return res.status(400).json({
 				response: false,
-				error: '이메일, 패스워드를 확인해주세요.',
+				message: '이메일, 패스워드를 확인해주세요.',
 			});
 		}
 	} catch (error) {
 		console.log(error);
 		return res.status(500).json({
 			response: false,
-			error: error,
+			message: error,
 		});
 	}
 });
@@ -88,31 +88,31 @@ userAuthRouter.post('/register', async (req, res) => {
 
 		// 이메일 체크
 		if (!email) {
-			return res.status(400).json({ error: '이메일이 없습니다.' });
+			return res.status(400).json({ message: '이메일이 없습니다.' });
 		} else {
 			const dupulicateEmailUser = await User.findOne({ email });
 			if (dupulicateEmailUser) {
 				return res
 					.status(400)
-					.json({ error: '이미 등록된 이메일입니다.' });
+					.json({ message: '이미 등록된 이메일입니다.' });
 			}
 		}
 
 		// 유저명 체크
 		if (!userName) {
-			return res.status(400).json({ error: '유저명이 없습니다.' });
+			return res.status(400).json({ message: '유저명이 없습니다.' });
 		} else {
 			const dupulicateUserName = await User.findOne({ userName });
 			if (dupulicateUserName) {
 				return res
 					.status(400)
-					.json({ error: '이미 등록된  유저명입니다.' });
+					.json({ message: '이미 등록된  유저명입니다.' });
 			}
 		}
 
 		// 비밀번호 필드 체크
 		if (!password) {
-			return res.status(400).json({ error: '비밀번호가 없습니다.' });
+			return res.status(400).json({ message: '비밀번호가 없습니다.' });
 		}
 
 		const newUser = new User({
@@ -146,7 +146,7 @@ userAuthRouter.post('/register', async (req, res) => {
 		// console.log(error);
 		return res.status(500).json({
 			response: false,
-			error: error,
+			message: error,
 		});
 	}
 });
@@ -158,7 +158,7 @@ userAuthRouter.post('/updateprofile', async (req, res) => {
 		if (!user) {
 			return res.status(500).json({
 				response: false,
-				error: '유저 정보를 찾을 수 없습니다.',
+				message: '유저 정보를 찾을 수 없습니다.',
 			});
 		} else {
 			// 이메일 업데이트
@@ -170,7 +170,7 @@ userAuthRouter.post('/updateprofile', async (req, res) => {
 				if (checkDuplicateEmailUser) {
 					return res.status(500).json({
 						response: false,
-						error: '이미 등록된 이메일입니다.',
+						message: '이미 등록된 이메일입니다.',
 					});
 				} else {
 					user.email = updateUserInfo.email;
@@ -195,7 +195,7 @@ userAuthRouter.post('/updateprofile', async (req, res) => {
 				if (checkDuplicateUserName) {
 					return res.status(500).json({
 						response: false,
-						error: '이미 등록된 유저명입니다.',
+						message: '이미 등록된 유저명입니다.',
 					});
 				} else {
 					user.userName = updateUserInfo.userName;
@@ -217,7 +217,7 @@ userAuthRouter.post('/updateprofile', async (req, res) => {
 	} catch (error) {
 		return res.status(500).json({
 			response: false,
-			error: error,
+			message: error,
 		});
 	}
 });
@@ -235,7 +235,7 @@ userAuthRouter.post('/deleteprofile', async (req, res) => {
 	} catch (error) {
 		return res.status(500).json({
 			response: false,
-			error: error,
+			message: error,
 		});
 	}
 });
