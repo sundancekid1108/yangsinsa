@@ -34,6 +34,10 @@ const Login = () => {
 		}
 	};
 
+	const navigateToSignUp = () => {
+		navigate('/signup');
+	};
+
 	return (
 		<div>
 			스토어 어드민 로그인
@@ -77,6 +81,15 @@ const Login = () => {
 						</button>
 					</div>
 				</form>
+				<div>
+					<button
+						className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
+						type="submit"
+						onClick={navigateToSignUp}
+					>
+						signup
+					</button>
+				</div>
 			</div>
 		</div>
 	);

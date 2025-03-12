@@ -31,8 +31,6 @@ axiosInstance.interceptors.response.use(
 
 	async (error) => {
 		// 401, 403, 404, 500 에러일 경우
-		console.log('인스탄스 실패!!');
-		console.log(error.response);
 
 		const originalRequest = error.config;
 
@@ -47,16 +45,15 @@ axiosInstance.interceptors.response.use(
 			localStorage.setItem('token', newAccessToken);
 			originalRequest.headers.authorization = newAccessToken;
 			return axiosInstance(originalRequest);
-		}
-
-		if (error.response && error.response.status === 403) {
+		} else if (error.response && error.response.status === 403) {
 			localStorage.removeItem('token');
 			console.log('인터셉터 테스트, 토큰 만료');
 			alert('인터셉터 테스트, 토큰 만료');
 
 			return new Promise(() => {});
+		} else {
+			return Promise.reject(error);
 		}
-		return Promise.reject(error);
 	},
 );
 
