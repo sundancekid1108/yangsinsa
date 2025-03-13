@@ -18,7 +18,7 @@ const storeadminauthrouter = express.Router();
 storeadminauthrouter.post('/login', async (req, res) => {
 	try {
 		const { userName, password } = req.body;
-
+		console.log(req.body);
 		// 필수 필드 체크
 		if (!userName || !password) {
 			return res.status(400).json({
@@ -69,7 +69,7 @@ storeadminauthrouter.post('/login', async (req, res) => {
 		} else {
 			return res.status(400).json({
 				response: false,
-				message: '이메일, 패스워드를 확인해주세요.',
+				message: '아이디, 패스워드를 확인해주세요.',
 			});
 		}
 	} catch (error) {

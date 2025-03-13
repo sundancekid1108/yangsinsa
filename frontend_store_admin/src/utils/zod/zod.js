@@ -33,3 +33,8 @@ export const storeAdminRegisterSchema = z.object({
 		.nonempty('이메일을 입력해주세요.')
 		.email('올바른 형식의 이메일을 입력해주세요.'),
 });
+
+export const storeAdminLoginSchema = z.object({
+	userName: z.string().nonempty('유저명을 입력해주세요.'),
+	password: z.string().nonempty('비밀번호를 입력해주세요.'),
+});

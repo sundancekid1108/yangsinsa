@@ -1,20 +1,29 @@
-import { React, useEffect, useRef } from 'react';
+import { React, useEffect, useRef, useState } from 'react';
 import { Outlet, useLocation, useNavigate, redirect } from 'react-router-dom';
 import { useForm } from 'react-hook-form';
 import Input from '../../components/input/input.jsx';
 import axiosInstance from '../../utils/axios';
 import { userLogin } from '../../api/user/user.js';
 import { useAuth } from '../../utils/useAuth';
+import {
+	storeAdminLoginSchema,
+	storeAdminRegisterSchema,
+} from '../../utils/zod/zod';
+import { zodResolver } from '@hookform/resolvers/zod';
 
 const Login = () => {
 	const navigate = useNavigate();
 	const { isAuthenticated, setLogin } = useAuth();
+	const [errorMessage, setErrorMessage] = useState('');
 	const {
 		register,
 		handleSubmit,
 		watch,
 		formState: { errors },
-	} = useForm({ mode: 'onSubmit' });
+	} = useForm({
+		mode: 'onSubmit',
+		resolver: zodResolver(storeAdminLoginSchema),
+	});
 	//Token 보유시 리다이렉트
 	useEffect(() => {
 		if (isAuthenticated) {
@@ -23,15 +32,21 @@ const Login = () => {
 	});
 
 	const submitForm = async (data) => {
-		try {
-			const res = await userLogin(data);
-			if (res && res.status === 200) {
-				setLogin();
-				navigate('/');
-			}
-		} catch (error) {
-			console.log(error);
-		}
+		console.log(data);
+		userLogin(data)
+			.then((response) => {
+				console.log('response', response);
+				if (response && response.status === 200) {
+					setLogin();
+					navigate('/');
+				} else {
+					console.log(response.data.message);
+					setErrorMessage(response.data.message);
+				}
+			})
+			.catch((error) => {
+				console.log('error', error);
+			});
 	};
 
 	const navigateToSignUp = () => {
@@ -42,17 +57,12 @@ const Login = () => {
 		<div>
 			스토어 어드민 로그인
 			<div>
-				<form
-					onSubmit={handleSubmit(submitForm)}
-					onError={() => {
-						'로그인 실패';
-					}}
-				>
+				<form onSubmit={handleSubmit(submitForm)}>
 					<div>
 						<Input
 							type={'text'}
-							label={'username'}
-							placeholder={'username'}
+							label={'아이디'}
+							placeholder={'아이디'}
 							register={register('userName', {
 								required: true,
 								maxLength: 30,
@@ -61,15 +71,23 @@ const Login = () => {
 					</div>
 
 					<div>
+						{errors.userName && <p>{errors.userName.message}</p>}
+					</div>
+
+					<div>
 						<Input
 							type={'password'}
-							label={'password'}
-							placeholder={'password'}
+							label={'암호'}
+							placeholder={'암호'}
 							register={register('password', {
 								required: true,
 								maxLength: 30,
 							})}
 						/>
+					</div>
+
+					<div>
+						{errors.password && <p>{errors.password.message}</p>}
 					</div>
 
 					<div>
@@ -90,10 +108,11 @@ const Login = () => {
 						signup
 					</button>
 				</div>
+
+				<div>{errorMessage ? errorMessage : ''}</div>
 			</div>
 		</div>
 	);
-	i;
 };
 
 export default Login;
