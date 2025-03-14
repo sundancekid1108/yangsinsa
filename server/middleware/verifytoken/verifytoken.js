@@ -25,6 +25,8 @@ const verifyToken = async (req, res, next) => {
 		// console.log(validateRefreshToken);
 
 		if (validateAccessToken) {
+			// console.log(validateAccessToken);
+			req.body.decoded = validateAccessToken;
 			next();
 		} else {
 			if (validateRefreshToken) {
