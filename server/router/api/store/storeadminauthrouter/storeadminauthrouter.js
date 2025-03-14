@@ -58,8 +58,6 @@ storeadminauthrouter.post('/login', async (req, res) => {
 				})
 				.header('Authorization', `Bearer ${token}`)
 				.json({
-					response: true,
-
 					storeAdmin: {
 						id: storeAdmin.id,
 						userName: storeAdmin.userName,
@@ -68,13 +66,11 @@ storeadminauthrouter.post('/login', async (req, res) => {
 				});
 		} else {
 			return res.status(400).json({
-				response: false,
 				message: '아이디, 패스워드를 확인해주세요.',
 			});
 		}
 	} catch (error) {
 		return res.status(500).json({
-			response: false,
 			message: error,
 		});
 	}
@@ -143,7 +139,6 @@ storeadminauthrouter.post('/register', async (req, res) => {
 		await newstoreAdmin.save().then((storeAdmin) => {
 			// console.log(user)
 			return res.status(200).json({
-				response: true,
 				storeAdmin: {
 					id: storeAdmin.id,
 					userName: storeAdmin.userName,
@@ -152,7 +147,6 @@ storeadminauthrouter.post('/register', async (req, res) => {
 		});
 	} catch (error) {
 		return res.status(500).json({
-			response: false,
 			message: error,
 		});
 	}
@@ -163,7 +157,6 @@ storeadminauthrouter.post('/updateprofile', async (req, res) => {
 	const storeAdmin = await StoreAdmin.findById(updatestoreAdminInfo.id);
 	if (!storeAdmin) {
 		return res.status(500).json({
-			response: false,
 			message: '유저 정보를 찾을 수 없습니다.',
 		});
 	} else {
@@ -173,7 +166,6 @@ storeadminauthrouter.post('/updateprofile', async (req, res) => {
 			});
 			if (duplicatestoreAdminName) {
 				return res.status(400).json({
-					response: false,
 					message: '이미 등록된 유저명입니다.',
 				});
 			} else {
@@ -190,7 +182,6 @@ storeadminauthrouter.post('/updateprofile', async (req, res) => {
 		}
 		await storeAdmin.save().then((storeAdmin) => {
 			return res.status(200).json({
-				response: true,
 				storeAdmin: {
 					id: storeAdmin.id,
 					userName: storeAdmin.userName,
@@ -201,14 +192,15 @@ storeadminauthrouter.post('/updateprofile', async (req, res) => {
 });
 
 storeadminauthrouter.get('/updateaccessetoken', async (req, res) => {
+	const secret = keys.jwt.secret;
 	const headers = req.headers;
-
 	const refreshToken = headers.cookie.split('refreshToken=')[1];
+	const decoded = jwt.verify(refreshToken, secret); // JWT를 검증합니다.
 
 	const payload = {
-		id: refreshToken.id,
-		userName: refreshToken.userName,
-		adminGrade: refreshToken.adminGrade,
+		id: decoded.id,
+		userName: decoded.userName,
+		adminGrade: decoded.adminGrade,
 	};
 
 	const newAccessToken = generateToken(payload);

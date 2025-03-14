@@ -31,7 +31,7 @@ const Login = () => {
 		}
 	});
 
-	const submitForm = async (data) => {
+	const submitForm = (data) => {
 		console.log(data);
 		userLogin(data)
 			.then((response) => {

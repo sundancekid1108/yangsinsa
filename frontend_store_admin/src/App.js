@@ -11,6 +11,7 @@ import StoreInfo from './pages/storeinfo/storeinfo.jsx';
 import SignUp from './pages/signup/signup.jsx';
 import BrandList from './pages/brandlist/brandlist';
 import UserList from './pages/userlist/userlist';
+import CreateStore from './pages/createstore/createstore';
 
 const App = () => {
 	return (
@@ -25,6 +26,7 @@ const App = () => {
 					<Route path="/user" element={<UserList />} />
 					<Route path="/store/:storeid" element={<StoreInfo />} />
 					<Route path="/profile" element={<Profile />} />
+					<Route path="/createstore" element={<CreateStore />} />
 				</Route>
 
 				<Route path="*" element={<NotFound />} />

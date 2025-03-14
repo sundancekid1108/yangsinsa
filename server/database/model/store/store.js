@@ -6,7 +6,18 @@ const Schema = Mongoose.Schema;
 const StoreSchema = new Schema({
 	storeName: {
 		type: String,
+		required: true,
+	},
+
+	storeEngName: {
+		type: String,
 		trim: true,
+		required: true,
+	},
+
+	storeAdminId: {
+		type: Schema.Types.ObjectId,
+		ref: 'StoreAdmin',
 	},
 
 	storeDescription: {
@@ -39,11 +50,6 @@ const StoreSchema = new Schema({
 	isActivated: {
 		type: Boolean,
 		default: false,
-	},
-	brand: {
-		type: Schema.Types.ObjectId,
-		ref: 'Brand',
-		default: null,
 	},
 	status: {
 		type: String,

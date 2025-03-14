@@ -59,7 +59,6 @@ adminAuthRouter.post('/login', async (req, res) => {
 				})
 				.header('Authorization', `Bearer ${token}`)
 				.json({
-					response: true,
 					adminUser: {
 						id: adminUser.id,
 						userName: adminUser.userName,
@@ -68,13 +67,11 @@ adminAuthRouter.post('/login', async (req, res) => {
 				});
 		} else {
 			return res.status(400).json({
-				response: false,
 				message: '이메일, 패스워드를 확인해주세요.',
 			});
 		}
 	} catch (error) {
 		return res.status(500).json({
-			response: false,
 			message: error,
 		});
 	}
@@ -135,7 +132,6 @@ adminAuthRouter.post('/register', async (req, res) => {
 		await newAdminUser.save().then((adminUser) => {
 			// console.log(user)
 			return res.status(200).json({
-				response: true,
 				adminUser: {
 					id: adminUser.id,
 					email: adminUser.email,
@@ -146,7 +142,6 @@ adminAuthRouter.post('/register', async (req, res) => {
 		});
 	} catch (error) {
 		return res.status(500).json({
-			response: false,
 			message: error,
 		});
 	}
@@ -158,7 +153,6 @@ adminAuthRouter.post('/updateprofile', async (req, res) => {
 		const adminUser = await Admin.findById(updateAdminUserInfo.id);
 		if (!adminUser) {
 			return res.status(500).json({
-				response: false,
 				message: '유저 정보를 찾을 수 없습니다.',
 			});
 		} else {
@@ -188,7 +182,6 @@ adminAuthRouter.post('/updateprofile', async (req, res) => {
 
 		await adminUser.save().then((adminUser) => {
 			return res.status(200).json({
-				response: true,
 				adminUser: {
 					id: adminUser.id,
 					firstName: adminUser.firstName,
@@ -200,7 +193,6 @@ adminAuthRouter.post('/updateprofile', async (req, res) => {
 		});
 	} catch (error) {
 		return res.status(500).json({
-			response: false,
 			message: error,
 		});
 	}
@@ -213,26 +205,25 @@ adminAuthRouter.post('/deleteuserinfo', async (req, res) => {
 		const adminUser = await Admin.findById(id);
 
 		return res.status(200).json({
-			response: true,
 			message: ' 유저 정보 삭제 작업중',
 		});
 	} catch (error) {
 		return res.status(500).json({
-			response: false,
 			message: error,
 		});
 	}
 });
 
 adminAuthRouter.get('/updateaccessetoken', async (req, res) => {
+	const secret = keys.jwt.secret;
 	const headers = req.headers;
-
 	const refreshToken = headers.cookie.split('refreshToken=')[1];
+	const decoded = jwt.verify(refreshToken, secret); // JWT를 검증합니다.
 
 	const payload = {
-		id: refreshToken.id,
-		userName: refreshToken.userName,
-		adminGrade: refreshToken.adminGrade,
+		id: decoded.id,
+		userName: decoded.userName,
+		adminGrade: decoded.adminGrade,
 	};
 
 	const newAccessToken = generateToken(payload);

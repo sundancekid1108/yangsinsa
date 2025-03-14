@@ -28,7 +28,6 @@ brandRouter.post('/createbrand', async (req, res) => {
 
 		await newBrand.save().then((brand) => {
 			return res.status(200).json({
-				response: true,
 				brand: {
 					id: brand._id,
 					brandName: brand.brandName,
@@ -38,7 +37,6 @@ brandRouter.post('/createbrand', async (req, res) => {
 		});
 	} catch (error) {
 		return res.status(500).json({
-			response: false,
 			message: error,
 		});
 	}
@@ -49,12 +47,10 @@ brandRouter.get('/brandlist', async (req, res, next) => {
 		const brandList = await Brand.find().sort('-createdDate').exec();
 
 		return res.json({
-			response: true,
 			brandList,
 		});
 	} catch (error) {
 		return res.status(500).json({
-			response: false,
 			message: error,
 		});
 	}
@@ -63,12 +59,10 @@ brandRouter.get('/brandlist', async (req, res, next) => {
 brandRouter.post('/searchbrand', authAdmin, async (req, res) => {
 	try {
 		return res.json({
-			response: true,
 			message: 'Search Brand',
 		});
 	} catch (error) {
 		return res.status(500).json({
-			response: false,
 			message: error,
 		});
 	}
@@ -80,18 +74,15 @@ brandRouter.get('/branddetail/:brandid', async (req, res) => {
 		const brand = await Brand.findById(brandId);
 		if (brand) {
 			return res.status(200).json({
-				response: true,
 				store,
 			});
 		} else {
 			return res.status(500).json({
-				response: false,
 				message: '브랜드 정보 없음',
 			});
 		}
 	} catch (error) {
 		return res.status(500).json({
-			response: false,
 			message: error,
 		});
 	}

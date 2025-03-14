@@ -36,7 +36,7 @@ axiosInstance.interceptors.response.use(
 
 		if (error.response && error.response.status === 401) {
 			const response = await axiosInstance.get(
-				'/admin/auth/updateaccessetoken',
+				'/store/auth/updateaccessetoken',
 			);
 			console.log(response);
 			const headers = response.headers;
