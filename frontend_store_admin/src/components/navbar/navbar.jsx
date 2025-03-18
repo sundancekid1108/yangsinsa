@@ -4,7 +4,7 @@ const Navbar = () => {
 	const [navOpen, setNavOpen] = useState(false);
 
 	const navbarMenuList = [
-		{ name: 'store', href: '/store', current: true },
+		{ name: 'mystore', href: '/mystore', current: true },
 		{ name: 'brand', href: '/brand', current: false },
 		{ name: 'user', href: '/user', current: false },
 	];

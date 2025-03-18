@@ -6,7 +6,6 @@ import Login from './pages/login/login.jsx';
 import Home from './pages/home/home.jsx';
 import Profile from './pages/profile/profile';
 import NotFound from './pages/notfound/notfound.jsx';
-import StoreList from './pages/storelist/storelist.jsx';
 import StoreInfo from './pages/storeinfo/storeinfo.jsx';
 import SignUp from './pages/signup/signup.jsx';
 import BrandList from './pages/brandlist/brandlist';
@@ -21,10 +20,10 @@ const App = () => {
 				<Route path="/signup" element={<SignUp />} />
 				<Route element={<ProtectedRoute />}>
 					<Route path="/" element={<Home />} />
-					<Route path="/store" element={<StoreList />} />
+
 					<Route path="/brand" element={<BrandList />} />
 					<Route path="/user" element={<UserList />} />
-					<Route path="/store/:storeid" element={<StoreInfo />} />
+					<Route path="/mystore" element={<StoreInfo />} />
 					<Route path="/profile" element={<Profile />} />
 					<Route path="/createstore" element={<CreateStore />} />
 				</Route>

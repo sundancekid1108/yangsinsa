@@ -15,7 +15,7 @@ const StoreSchema = new Schema({
 		required: true,
 	},
 
-	storeAdminId: {
+	storeAdmin: {
 		type: Schema.Types.ObjectId,
 		ref: 'StoreAdmin',
 	},
@@ -38,7 +38,6 @@ const StoreSchema = new Schema({
 
 	businessRegistrationCode: {
 		type: String,
-		default: null,
 	},
 
 	storeAddress: {
@@ -60,6 +59,7 @@ const StoreSchema = new Schema({
 			constants.STATUS.HOLD,
 		],
 	},
+
 	updatedDate: {
 		type: Date,
 		default: Date.now,

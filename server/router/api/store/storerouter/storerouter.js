@@ -1,5 +1,6 @@
 import express from 'express';
 import Store from '../../../../database/model/store/store.js';
+import StoreAdmin from '../../../../database/model//storeadmin/storeadmin.js';
 const storeRouter = express.Router();
 
 // 상점 등록
@@ -81,7 +82,7 @@ storeRouter.post('/createstore', async (req, res) => {
 
 			const newStore = new Store({
 				storeName: storeName,
-				storeAdminId: decoded.id,
+				storeAdmin: decoded.id,
 				storeEngName: storeEngName,
 				storeEmail: storeEmail,
 				storePhoneNumber: storePhoneNumber,
@@ -110,8 +111,18 @@ storeRouter.get('/mystore', async (req, res) => {
 	try {
 		const { decoded } = req.body;
 		const storeAdminUserId = decoded.id;
-		const myStoreData = await Store.find(storeAdminId: storeAdminUserId);
-		return res.status(200).json({})
+		const myStoreData = await Store.findOne({
+			storeAdmin: storeAdminUserId,
+		}).populate({
+			path: 'storeAdmin',
+			select: 'koreanName phoneNumber email adminGrade',
+		});
+
+		console.log(myStoreData);
+
+		return res.status(200).json({
+			myStoreData,
+		});
 	} catch (error) {
 		return res.status(500).json({
 			error,

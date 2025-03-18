@@ -39,3 +39,23 @@ export const createStore = async (data) => {
 		return error.response;
 	}
 };
+
+export const getMyStore = async () => {
+	const GETMYSTORE_URL = '/store/mystore';
+	try {
+		const accessToken = localStorage.getItem('token');
+		const response = await axiosInstance.get(GETMYSTORE_URL, {
+			headers: {
+				'Content-Type': 'application/json',
+				authorization: accessToken,
+			},
+		});
+
+		if (response.status === 200) {
+			return response;
+		}
+	} catch (error) {
+		console.log('error.response', error.response);
+		return error.response;
+	}
+};
