@@ -1,5 +1,6 @@
 import { React, useEffect, useRef, useState } from 'react';
 import { Outlet, useLocation, useNavigate, redirect } from 'react-router-dom';
+import { useMutation } from '@tanstack/react-query';
 import { useForm } from 'react-hook-form';
 import Input from '../../components/input/input.jsx';
 import { useAuth } from '../../utils/useAuth';
@@ -20,17 +21,27 @@ const CreateStore = () => {
 		resolver: zodResolver(createStoreSchema),
 	});
 
-	const submitForm = (data) => {
-		console.log(data);
-		createStore(data).then((response) => {
-			console.log(response);
+	const mutate = useMutation({
+		mutationFn: (data) => {
+			return createStore(data);
+		},
+		onSuccess: (response) => {
+			console.log('onSuccess', response);
 			if (response.status === 200) {
+				console.log('success');
 				navigate('/');
 			} else {
-				console.log(response);
 				setErrorMessage(response.data.message);
 			}
-		});
+		},
+		onError: (error, newData, context) => {
+			console.log('onError', error);
+			setErrorMessage('서버에 문제가 발생했습니다.');
+		},
+	});
+
+	const submitForm = (data) => {
+		mutate.mutate(data);
 	};
 
 	return (

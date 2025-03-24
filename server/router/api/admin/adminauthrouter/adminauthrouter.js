@@ -26,7 +26,7 @@ adminAuthRouter.post('/login', async (req, res) => {
 			});
 		}
 
-		const adminUser = await Admin.findOne({ userName });
+		const adminUser = await Admin.findOne({ userName: userName });
 
 		//유저 등록 체크
 		if (!adminUser) {
@@ -94,7 +94,7 @@ adminAuthRouter.post('/register', async (req, res) => {
 		// 유저명 중복 체크
 		if (userName) {
 			const dupulicateUserName = await Admin.findOne({
-				userName,
+				userName: userName,
 			});
 			if (dupulicateUserName) {
 				return res
@@ -106,7 +106,7 @@ adminAuthRouter.post('/register', async (req, res) => {
 		// 전화번호 중복 체크
 		if (phoneNumber) {
 			const dupulicateAdminUserPhoneNumber = await Admin.findOne({
-				phoneNumber,
+				phoneNumber: phoneNumber,
 			});
 			if (dupulicateAdminUserPhoneNumber) {
 				return res

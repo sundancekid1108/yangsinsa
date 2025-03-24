@@ -24,7 +24,7 @@ userAuthRouter.post('/login', async (req, res) => {
 			});
 		}
 
-		const user = await User.findOne({ email });
+		const user = await User.findOne({ email: email });
 		console.log(user);
 
 		if (!user) {
@@ -87,7 +87,7 @@ userAuthRouter.post('/register', async (req, res) => {
 		if (!email) {
 			return res.status(400).json({ message: '이메일이 없습니다.' });
 		} else {
-			const dupulicateEmailUser = await User.findOne({ email });
+			const dupulicateEmailUser = await User.findOne({ email: email });
 			if (dupulicateEmailUser) {
 				return res
 					.status(400)
@@ -99,7 +99,9 @@ userAuthRouter.post('/register', async (req, res) => {
 		if (!userName) {
 			return res.status(400).json({ message: '유저명이 없습니다.' });
 		} else {
-			const dupulicateUserName = await User.findOne({ userName });
+			const dupulicateUserName = await User.findOne({
+				userName: userName,
+			});
 			if (dupulicateUserName) {
 				return res
 					.status(400)

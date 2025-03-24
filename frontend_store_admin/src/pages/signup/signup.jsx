@@ -1,9 +1,9 @@
 import { React, useEffect, useRef, useState } from 'react';
 import { Outlet, useLocation, useNavigate, redirect } from 'react-router-dom';
 import { useForm } from 'react-hook-form';
+import { useMutation } from '@tanstack/react-query';
 import { zodResolver } from '@hookform/resolvers/zod';
 import Input from '../../components/input/input.jsx';
-import axiosInstance from '../../utils/axios';
 import { useAuth } from '../../utils/useAuth';
 import { userSignUp } from '../../api/user/user';
 import { storeAdminRegisterSchema } from '../../utils/zod/zod.js';
@@ -30,20 +30,27 @@ const SignUp = () => {
 		}
 	});
 
+	const mutate = useMutation({
+		mutationFn: (data) => {
+			return userSignUp(data);
+		},
+		onSuccess: (response) => {
+			console.log('onSuccess', response);
+			if (response.status === 200) {
+				console.log('success');
+				navigate('/');
+			} else {
+				setErrorMessage(response.data.message);
+			}
+		},
+		onError: (error, newData, context) => {
+			console.log('onError', error);
+			setErrorMessage('서버에 문제가 발생했습니다.');
+		},
+	});
+
 	const submitForm = (data) => {
-		userSignUp(data)
-			.then((response) => {
-				console.log('response', response);
-				if (response && response.status === 200) {
-					navigate('/login');
-				} else {
-					console.log(response.data.message);
-					setErrorMessage(response.data.message);
-				}
-			})
-			.catch((error) => {
-				console.log('error', error);
-			});
+		mutate.mutate(data);
 	};
 
 	return (

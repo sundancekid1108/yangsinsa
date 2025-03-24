@@ -39,20 +39,26 @@ storeRouter.post('/createstore', async (req, res) => {
 				});
 			}
 
-			const duplicateStoreName = await Store.findOne({ storeName });
+			const duplicateStoreName = await Store.findOne({
+				storeName: storeName,
+			});
 			if (duplicateStoreName) {
 				return res.status(400).json({
 					message: '이미 등록된 상점입니다.',
 				});
 			}
-			const duplicateStoreEngName = await Store.findOne({ storeEngName });
+			const duplicateStoreEngName = await Store.findOne({
+				storeEngName: storeEngName,
+			});
 			if (duplicateStoreEngName) {
 				return res.status(400).json({
 					message: '이미 등록된 상점(영문)입니다.',
 				});
 			}
 
-			const duplicateStoreEmail = await Store.findOne({ storeEmail });
+			const duplicateStoreEmail = await Store.findOne({
+				storeEmail: storeEmail,
+			});
 
 			if (duplicateStoreEmail) {
 				return res.status(400).json({
@@ -61,7 +67,7 @@ storeRouter.post('/createstore', async (req, res) => {
 			}
 
 			const duplicateStorePhoneNumber = await Store.findOne({
-				storePhoneNumber,
+				storePhoneNumber: storePhoneNumber,
 			});
 
 			if (duplicateStorePhoneNumber) {
@@ -71,7 +77,7 @@ storeRouter.post('/createstore', async (req, res) => {
 			}
 
 			const duplicateBusinesssRegistrationCode = await Store.findOne({
-				businessRegistrationCode,
+				businessRegistrationCode: businessRegistrationCode,
 			});
 
 			if (duplicateBusinesssRegistrationCode) {

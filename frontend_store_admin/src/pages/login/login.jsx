@@ -1,14 +1,11 @@
 import { React, useEffect, useRef, useState } from 'react';
 import { Outlet, useLocation, useNavigate, redirect } from 'react-router-dom';
+import { useMutation } from '@tanstack/react-query';
 import { useForm } from 'react-hook-form';
 import Input from '../../components/input/input.jsx';
-import axiosInstance from '../../utils/axios';
 import { userLogin } from '../../api/user/user.js';
 import { useAuth } from '../../utils/useAuth';
-import {
-	storeAdminLoginSchema,
-	storeAdminRegisterSchema,
-} from '../../utils/zod/zod';
+import { storeAdminLoginSchema } from '../../utils/zod/zod';
 import { zodResolver } from '@hookform/resolvers/zod';
 
 const Login = () => {
@@ -24,6 +21,26 @@ const Login = () => {
 		mode: 'onSubmit',
 		resolver: zodResolver(storeAdminLoginSchema),
 	});
+
+	const mutate = useMutation({
+		mutationFn: (data) => {
+			return userLogin(data);
+		},
+		onSuccess: (response) => {
+			// console.log('onSuccess', response);
+			if (response.status === 200) {
+				setLogin();
+				navigate('/');
+			} else {
+				setErrorMessage(response.data.message);
+			}
+		},
+		onError: (error, newData, context) => {
+			console.log('onError', error);
+			setErrorMessage('서버에 문제가 발생했습니다.');
+		},
+	});
+
 	//Token 보유시 리다이렉트
 	useEffect(() => {
 		if (isAuthenticated) {
@@ -32,21 +49,7 @@ const Login = () => {
 	});
 
 	const submitForm = (data) => {
-		console.log(data);
-		userLogin(data)
-			.then((response) => {
-				console.log('response', response);
-				if (response && response.status === 200) {
-					setLogin();
-					navigate('/');
-				} else {
-					console.log(response.data.message);
-					setErrorMessage(response.data.message);
-				}
-			})
-			.catch((error) => {
-				console.log('error', error);
-			});
+		mutate.mutate(data);
 	};
 
 	const navigateToSignUp = () => {

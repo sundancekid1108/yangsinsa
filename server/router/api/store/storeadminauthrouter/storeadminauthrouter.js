@@ -18,14 +18,14 @@ const storeadminauthrouter = express.Router();
 storeadminauthrouter.post('/login', async (req, res) => {
 	try {
 		const { userName, password } = req.body;
-		console.log(req.body);
+
 		// 필수 필드 체크
 		if (!userName || !password) {
 			return res.status(400).json({
 				message: '필수 필드를 입력해주세요.',
 			});
 		}
-		const storeAdmin = await StoreAdmin.findOne({ userName });
+		const storeAdmin = await StoreAdmin.findOne({ userName: userName });
 
 		//유저 등록 체크
 		if (!storeAdmin) {
@@ -70,6 +70,7 @@ storeadminauthrouter.post('/login', async (req, res) => {
 			});
 		}
 	} catch (error) {
+		console.log(error);
 		return res.status(500).json({
 			message: error,
 		});
@@ -88,7 +89,7 @@ storeadminauthrouter.post('/register', async (req, res) => {
 		// 유저명 중복 체크
 		if (userName) {
 			const dupulicateUserName = await StoreAdmin.findOne({
-				userName,
+				userName: userName,
 			});
 			if (dupulicateUserName) {
 				return res.status(400).json({
@@ -100,7 +101,7 @@ storeadminauthrouter.post('/register', async (req, res) => {
 		// 전화번호 중복 체크
 		if (phoneNumber) {
 			const dupulicatestoreAdminPhoneNumber = await StoreAdmin.findOne({
-				phoneNumber,
+				phoneNumber: phoneNumber,
 			});
 			if (dupulicatestoreAdminPhoneNumber) {
 				return res.status(400).json({
@@ -112,7 +113,7 @@ storeadminauthrouter.post('/register', async (req, res) => {
 		// 이메일 중복 체크
 		if (email) {
 			const dupulicatestoreAdminEmail = await StoreAdmin.findOne({
-				email,
+				email: email,
 			});
 			if (dupulicatestoreAdminEmail) {
 				return res.status(400).json({

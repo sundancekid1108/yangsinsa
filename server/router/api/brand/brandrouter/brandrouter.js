@@ -14,7 +14,7 @@ brandRouter.post('/createbrand', async (req, res) => {
 			});
 		}
 
-		const duplicateBrand = await Brand.findOne({ brandName });
+		const duplicateBrand = await Brand.findOne({ brandName: brandName });
 		if (duplicateBrand) {
 			return res.status(400).json({
 				message: '이미 등록된 브랜드입니다.',
