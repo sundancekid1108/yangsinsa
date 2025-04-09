@@ -1,5 +1,5 @@
 import Mongoose from 'mongoose';
-import constants from '../../../constants/constants.js'
+import constants from '../../../constants/constants.js';
 const Schema = Mongoose.Schema;
 
 const brandSchema = new Schema(
@@ -8,12 +8,16 @@ const brandSchema = new Schema(
 			type: String,
 			trim: true,
 		},
+		brandEngName: {
+			type: String,
+			trim: true,
+		},
 
 		image: {
 			data: Buffer,
 			contentType: String,
 		},
-		description: {
+		brandDescription: {
 			type: String,
 		},
 		isActive: {
@@ -23,7 +27,7 @@ const brandSchema = new Schema(
 
 		store: {
 			type: Schema.Types.ObjectId,
-			ref: "Store",
+			ref: 'Store',
 			default: null,
 		},
 		updatedDate: {
@@ -37,7 +41,7 @@ const brandSchema = new Schema(
 		},
 	},
 	{ timestamps: true },
-	{ versionKey: false }
+	{ versionKey: false },
 );
 
 const Brand = Mongoose.model('Brand', brandSchema);

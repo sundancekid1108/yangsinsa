@@ -148,7 +148,7 @@ userAuthRouter.post('/register', async (req, res) => {
 	}
 });
 
-userAuthRouter.post('/updateprofile', async (req, res) => {
+userAuthRouter.post('/updateuserinfo', async (req, res) => {
 	try {
 		const updateUserInfo = req.body;
 		const user = await User.findOne({ _id: updateUserInfo.id });

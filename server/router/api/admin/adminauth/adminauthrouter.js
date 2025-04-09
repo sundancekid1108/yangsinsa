@@ -147,7 +147,7 @@ adminAuthRouter.post('/register', async (req, res) => {
 	}
 });
 
-adminAuthRouter.post('/updateprofile', async (req, res) => {
+adminAuthRouter.post('/updateuserinfo', async (req, res) => {
 	try {
 		const updateAdminUserInfo = req.body;
 		const adminUser = await Admin.findById(updateAdminUserInfo.id);

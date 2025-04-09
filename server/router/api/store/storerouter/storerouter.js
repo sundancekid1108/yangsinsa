@@ -96,8 +96,6 @@ storeRouter.post('/createstore', async (req, res) => {
 				businessRegistrationCode: businessRegistrationCode,
 			});
 
-			console.log(newStore);
-
 			await newStore.save().then((store) => {
 				return res.status(200).json({ message: '스토어 생성 완료' });
 			});
@@ -123,8 +121,6 @@ storeRouter.get('/mystore', async (req, res) => {
 			path: 'storeAdmin',
 			select: 'koreanName phoneNumber email adminGrade',
 		});
-
-		console.log(myStoreData);
 
 		return res.status(200).json({
 			myStoreData,
@@ -169,7 +165,7 @@ storeRouter.post('/searchstore', async (req, res) => {
 			.exec();
 
 		return res.status(200).json({
-			storeList,
+			storeList: storeList,
 		});
 	} catch (error) {
 		return res.status(500).json({

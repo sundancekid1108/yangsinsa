@@ -51,6 +51,7 @@ const StoreAdminSchema = new Schema(
 
 		avatar: {
 			type: String,
+			default: '',
 		},
 
 		updatedDate: {
