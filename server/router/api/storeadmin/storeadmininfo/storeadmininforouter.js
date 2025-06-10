@@ -3,8 +3,10 @@ import StoreAdmin from '../../../../database/model/storeadmin/storeadmin.js';
 import bcrypt from 'bcryptjs';
 import {
 	generateRefreshToken,
-	generateToken,
+	generateAccessToken,
 } from '../../../../utils/generatetoken/generatetoken.js';
+import keys from '../../../../config/keys/keys.js';
+import jwt from 'jsonwebtoken';
 
 const storeAdminInfoRouter = express.Router();
 

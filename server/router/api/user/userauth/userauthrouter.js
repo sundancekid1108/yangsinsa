@@ -7,7 +7,7 @@ import User from '../../../../database/model/user/user.js';
 import keys from '../../../../config/keys/keys.js';
 import constants from '../../../../constants/constants.js';
 import {
-	generateToken,
+	generateAccessToken,
 	generateRefreshToken,
 } from '../../../../utils/generatetoken/generatetoken.js';
 
@@ -47,7 +47,7 @@ userAuthRouter.post('/login', async (req, res) => {
 				role: user.role,
 			};
 
-			const token = generateToken(payload);
+			const token = generateAccessToken(payload);
 			const refreshToken = generateRefreshToken(payload);
 
 			return res
@@ -230,7 +230,7 @@ userAuthRouter.post('/deleteprofile', async (req, res) => {
 	}
 });
 
-userAuthRouter.get('/updateaccessetoken', async (req, res) => {
+userAuthRouter.get('/refreshaccesstoken', async (req, res) => {
 	const headers = req.headers;
 
 	const refreshToken = headers.cookie.split('refreshToken=')[1];
@@ -241,7 +241,7 @@ userAuthRouter.get('/updateaccessetoken', async (req, res) => {
 		adminGrade: refreshToken.adminGrade,
 	};
 
-	const newAccessToken = generateToken(payload);
+	const newAccessToken = generateAccessToken(payload);
 	return res
 		.status(200)
 		.header('Authorization', `Bearer ${newAccessToken}`)

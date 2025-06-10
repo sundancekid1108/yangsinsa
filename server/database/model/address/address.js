@@ -1,12 +1,12 @@
 import Mongoose from 'mongoose';
-import constants from '../../../constants/constants.js'
+import constants from '../../../constants/constants.js';
 const Schema = Mongoose.Schema;
 
 const addressSchema = new Schema(
 	{
 		user: {
 			type: Schema.Types.ObjectId,
-			ref: "User",
+			ref: 'User',
 		},
 		address1: {
 			type: String,
@@ -47,7 +47,7 @@ const addressSchema = new Schema(
 		},
 	},
 	{ timestamps: true },
-	{ versionKey: false }
+	{ versionKey: false },
 );
 
 const Address = Mongoose.model('Address', addressSchema);

@@ -2,7 +2,6 @@ import express from 'express';
 import cors from 'cors';
 import dotenv from 'dotenv';
 import bodyParser from 'body-parser';
-import passport from 'passport';
 import dbConnect from './database/config.js';
 import keys from './config/keys/keys.js';
 import router from './router/router.js';

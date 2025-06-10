@@ -1,24 +1,27 @@
-import jwt from "jsonwebtoken";
-import keys from "../../config/keys/keys.js";
+import jwt from 'jsonwebtoken';
+import keys from '../../config/keys/keys.js';
 
-const secret = keys.jwt.secret;
-const tokenLife = keys.jwt.tokenLife;
-const refreshTokenLife = keys.jwt.refreshTokenLife;
+const accessTokenSecret = keys.accessTokenSecret;
+const refreshTokenSecret = keys.refreshTokenSecret;
+const accessTokenLife = keys.accessTokenLife;
+const refreshTokenLife = keys.refreshTokenLife;
 
+const generateAccessToken = (payload) => {
+	const accessToken = jwt.sign(payload, accessTokenSecret, {
+		algorithm: 'HS256',
 
-const generateToken = (payload) => {
-    const token = jwt.sign(payload, secret, {
-        algorithm: 'HS256',
-        expiresIn: tokenLife})
-        return token
-
-}
+		expiresIn: accessTokenLife,
+	});
+	return accessToken;
+};
 
 const generateRefreshToken = (payload) => {
-    const token = jwt.sign(payload, secret ,{
-        algorithm: 'HS256',
-        expiresIn: refreshTokenLife} )
-    return token
-}
+	const refreshToken = jwt.sign(payload, refreshTokenSecret, {
+		algorithm: 'HS256',
 
-export {generateToken, generateRefreshToken}
+		expiresIn: refreshTokenLife,
+	});
+	return refreshToken;
+};
+
+export { generateAccessToken, generateRefreshToken };

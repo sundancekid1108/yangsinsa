@@ -7,7 +7,7 @@ import User from '../../../../database/model/user/user.js';
 import keys from '../../../../config/keys/keys.js';
 import constants from '../../../../constants/constants.js';
 import {
-	generateToken,
+	generateAccessToken,
 	generateRefreshToken,
 } from '../../../../utils/generatetoken/generatetoken.js';
 

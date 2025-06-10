@@ -8,7 +8,7 @@ import Refreshtoken from '../../../../database/model/refreshtoken/refreshtoken.j
 import keys from '../../../../config/keys/keys.js';
 import constants from '../../../../constants/constants.js';
 import {
-	generateToken,
+	generateAccessToken,
 	generateRefreshToken,
 } from '../../../../utils/generatetoken/generatetoken.js';
 
@@ -46,7 +46,7 @@ storeAdminAuthRouter.post('/login', async (req, res) => {
 				adminGrade: storeAdmin.adminGrade,
 			};
 
-			const token = generateToken(payload);
+			const token = generateAccessToken(payload);
 			const refreshToken = generateRefreshToken(payload);
 
 			return res
@@ -152,8 +152,8 @@ storeAdminAuthRouter.post('/register', async (req, res) => {
 	}
 });
 
-storeAdminAuthRouter.get('/updateaccessetoken', async (req, res) => {
-	const secret = keys.jwt.secret;
+storeAdminAuthRouter.get('/refreshaccesstoken', async (req, res) => {
+	const secret = keys.refreshTokenSecret;
 	const headers = req.headers;
 	const refreshToken = headers.cookie.split('refreshToken=')[1];
 	const decoded = jwt.verify(refreshToken, secret); // JWT를 검증합니다.
@@ -164,11 +164,10 @@ storeAdminAuthRouter.get('/updateaccessetoken', async (req, res) => {
 		adminGrade: decoded.adminGrade,
 	};
 
-	const newAccessToken = generateToken(payload);
+	const newAccessToken = generateAccessToken(payload);
 	return res
 		.status(200)
 		.header('Authorization', `Bearer ${newAccessToken}`)
 		.json({ message: 'Access Token 재발급' });
 });
-
 export default storeAdminAuthRouter;
