@@ -1,17 +1,21 @@
 import React, { useState, useEffect } from 'react';
 import { Navigate, Outlet, useLocation, useNavigate } from 'react-router-dom';
-import { useAuth } from './useAuth';
+import { useSelector, useDispatch } from 'react-redux';
+import { logout } from '../stores/slice/auth/authslice';
 
-const ProtectedRoute = ({ children }) => {
-	const { isAuthenticated } = useAuth();
+const ProtectedRoute = () => {
+	const isAuthenticated = useSelector((state) => state.auth.isAuthenticated);
 
-	console.log('isAuthenticated', isAuthenticated);
+	const navigate = useNavigate();
 
-	if (isAuthenticated) {
-		return <Outlet />;
-	} else {
-		return <Navigate to={'/login'} />;
-	}
+	useEffect(() => {
+		// console.log('path', path);
+		if (!isAuthenticated) {
+			navigate('/login');
+		}
+	}, [isAuthenticated, navigate]);
+
+	return isAuthenticated ? <Outlet /> : null;
 };
 
 export default ProtectedRoute;

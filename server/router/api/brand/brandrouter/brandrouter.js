@@ -6,7 +6,13 @@ const brandRouter = express.Router();
 
 brandRouter.post('/createbrand', async (req, res) => {
 	try {
-		const { brandName, brandDescription } = req.body;
+		const { brandName, brandDescription, storeId } = req.body;
+
+		if (!storeId) {
+			return res.status(400).json({
+				message: '스토어 정보가 없습니다.',
+			});
+		}
 
 		if (!brandName || !brandDescription) {
 			return res.status(400).json({

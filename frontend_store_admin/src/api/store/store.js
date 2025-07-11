@@ -1,10 +1,10 @@
 import axiosInstance from '../../utils/axios';
 
 export const getStoreList = async () => {
-	const GETSTORELIST_URL = '/store/storelist';
+	const GET_STORELIST_URL = '/stores/storelist';
 	try {
 		const accessToken = localStorage.getItem('token');
-		const response = await axiosInstance.get(GETSTORELIST_URL, {
+		const response = await axiosInstance.get(GET_STORELIST_URL, {
 			headers: {
 				'Content-Type': 'application/json',
 				authorization: accessToken,
@@ -21,10 +21,10 @@ export const getStoreList = async () => {
 };
 
 export const createStore = async (data) => {
-	const CREATESTORE_URL = '/store/createStore';
+	const CREATE_STORE_URL = '/stores/createStore';
 	try {
 		const accessToken = localStorage.getItem('token');
-		const response = await axiosInstance.post(CREATESTORE_URL, data, {
+		const response = await axiosInstance.post(CREATE_STORE_URL, data, {
 			headers: {
 				'Content-Type': 'application/json',
 				authorization: accessToken,
@@ -41,21 +41,21 @@ export const createStore = async (data) => {
 };
 
 export const getMyStore = async () => {
-	const GETMYSTORE_URL = '/store/mystore';
+	const GET_MYSTORE_URL = '/stores/mystore';
 	try {
 		const accessToken = localStorage.getItem('token');
-		const response = await axiosInstance.get(GETMYSTORE_URL, {
+		const response = await axiosInstance.get(GET_MYSTORE_URL, {
 			headers: {
 				'Content-Type': 'application/json',
 				authorization: accessToken,
 			},
 		});
-
-		if (response.status === 200) {
-			return response;
-		}
+		return response;
+		// if (response.status === 200) {
+		// 	return response;
+		// }
 	} catch (error) {
-		console.log('error.response', error.response);
+		// console.log('error.response', error);
 		return error.response;
 	}
 };

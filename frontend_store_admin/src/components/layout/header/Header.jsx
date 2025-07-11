@@ -1,6 +1,7 @@
-import { React, useState } from "react";
-import Navbar from "../../navbar/navbar.jsx";
-import { Link } from "react-router-dom";
+import { React, useEffect, useState } from 'react';
+import Navbar from '../../navbar/navbar.jsx';
+import { getUserInfo } from '../../../api/user/user.js';
+import { Link } from 'react-router-dom';
 
 const Header = () => {
 	return (
@@ -8,7 +9,6 @@ const Header = () => {
 			<div>
 				<Navbar />
 			</div>
-			<div>Header</div>
 		</div>
 	);
 };

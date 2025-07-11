@@ -1,7 +1,7 @@
 import axios from 'axios';
-import { Outlet, useLocation, useNavigate, redirect } from 'react-router-dom';
-
-const BASE_URL = process.env.REACT_APP_BASE_URL;
+import { store } from '../stores/store';
+import { logout } from '../stores/slice/auth/authslice';
+const BASE_URL = process.env.REACT_APP_SERVER_BASE_URL;
 
 const axiosInstance = axios.create({
 	baseURL: BASE_URL,
@@ -25,7 +25,6 @@ axiosInstance.interceptors.request.use(
 axiosInstance.interceptors.response.use(
 	// 200번대 응답이 올때 처리
 	(response) => {
-		console.log('인스탄스 성공!!');
 		return response;
 	},
 
@@ -34,24 +33,33 @@ axiosInstance.interceptors.response.use(
 
 		const originalRequest = error.config;
 
-		if (error.response && error.response.status === 401) {
+		if (error.response && error.response.status === 400) {
+			return Promise.reject(error);
+		} else if (error.response && error.response.status === 401) {
 			const response = await axiosInstance.get(
-				'/store/auth/updateaccessetoken',
+				'/storeadmin/auth/refreshaccesstoken',
 			);
-			console.log(response);
+			alert('토큰 업데이트');
+			// console.log('response', response);
 			const headers = response.headers;
 			const newAccessToken = headers.authorization;
-			// console.log(newAccessToken);
+
 			localStorage.setItem('token', newAccessToken);
 			originalRequest.headers.authorization = newAccessToken;
 			return axiosInstance(originalRequest);
 		} else if (error.response && error.response.status === 403) {
+			// console.log(error.response);
+			// console.log('인터셉터 테스트, 토큰 만료');
 			localStorage.removeItem('token');
-			console.log('인터셉터 테스트, 토큰 만료');
-			alert('인터셉터 테스트, 토큰 만료');
-
+			store.dispatch(logout()); // 강제 로그아웃
+			window.location.href = '/login';
 			return new Promise(() => {});
 		} else {
+			// console.log('오류 발생');
+			// console.log(error);
+			localStorage.removeItem('token');
+			store.dispatch(logout()); // 강제 로그아웃
+			window.location.href = '/login';
 			return Promise.reject(error);
 		}
 	},

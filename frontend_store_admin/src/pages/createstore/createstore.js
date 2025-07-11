@@ -3,13 +3,14 @@ import { Outlet, useLocation, useNavigate, redirect } from 'react-router-dom';
 import { useMutation } from '@tanstack/react-query';
 import { useForm } from 'react-hook-form';
 import Input from '../../components/input/input.jsx';
-import { useAuth } from '../../utils/useAuth';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { createStoreSchema } from '../../utils/zod/zod';
-import { createStore } from '../../api/store/store';
+import { _createStore } from '../../stores/slice/store/storeslice';
+import { useDispatch } from 'react-redux';
 
 const CreateStore = () => {
 	const navigate = useNavigate();
+	const dispatch = useDispatch();
 	const [errorMessage, setErrorMessage] = useState('');
 	const {
 		register,
@@ -21,32 +22,17 @@ const CreateStore = () => {
 		resolver: zodResolver(createStoreSchema),
 	});
 
-	const mutate = useMutation({
-		mutationFn: (data) => {
-			return createStore(data);
-		},
-		onSuccess: (response) => {
-			console.log('onSuccess', response);
-			if (response.status === 200) {
-				console.log('success');
-				navigate('/');
-			} else {
-				setErrorMessage(response.data.message);
-			}
-		},
-		onError: (error, newData, context) => {
-			console.log('onError', error);
-			setErrorMessage('서버에 문제가 발생했습니다.');
-		},
-	});
+	const submitForm = async (data, e) => {
+		e.preventDefault();
+		console.log(data);
 
-	const submitForm = (data) => {
-		mutate.mutate(data);
+		const result = await dispatch(_createStore(data));
+		console.log(result);
 	};
 
 	return (
 		<div>
-			<div>CreateStore</div>
+			<div>스토어 생성</div>
 			<div>
 				<form onSubmit={handleSubmit(submitForm)}>
 					<div>
@@ -86,7 +72,7 @@ const CreateStore = () => {
 					</div>
 
 					<div>
-						{errors.storeEngName && (
+						{errors.storeEmail && (
 							<p>{errors.storeEmail.message}</p>
 						)}
 					</div>
@@ -102,7 +88,7 @@ const CreateStore = () => {
 					</div>
 
 					<div>
-						{errors.storeEngName && (
+						{errors.storePhoneNumber && (
 							<p>{errors.storePhoneNumber.message}</p>
 						)}
 					</div>

@@ -122,9 +122,15 @@ storeRouter.get('/mystore', async (req, res) => {
 			select: 'koreanName phoneNumber email adminGrade',
 		});
 
-		return res.status(200).json({
-			myStoreData,
-		});
+		console.log('myStoreData', myStoreData);
+
+		if (myStoreData) {
+			return res.status(200).json(myStoreData);
+		} else {
+			return res.status(204).json({
+				message: '스토어 정보가 없습니다.',
+			});
+		}
 	} catch (error) {
 		return res.status(500).json({
 			error,
@@ -136,9 +142,16 @@ storeRouter.get('/mystore', async (req, res) => {
 storeRouter.get('/storelist', async (req, res) => {
 	try {
 		const storeList = await Store.find().sort('-createdDate').exec();
-		return res.status(200).json({
-			storeList,
-		});
+
+		if (storeList) {
+			return res.status(200).json({
+				storeList,
+			});
+		} else {
+			return res.status(400).json({
+				message: '스토어 정보가 없습니다.',
+			});
+		}
 	} catch (error) {
 		return res.status(500).json({
 			message: error,
@@ -164,9 +177,15 @@ storeRouter.post('/searchstore', async (req, res) => {
 			.sort('-createdDate')
 			.exec();
 
-		return res.status(200).json({
-			storeList: storeList,
-		});
+		if (storeList) {
+			return res.status(200).json({
+				storeList: storeList,
+			});
+		} else {
+			return res.status(204).json({
+				message: '상점 정보 없음',
+			});
+		}
 	} catch (error) {
 		return res.status(500).json({
 			message: error,
@@ -183,7 +202,7 @@ storeRouter.get('/storedetail/:storeid', async (req, res) => {
 				store,
 			});
 		} else {
-			return res.status(500).json({
+			return res.status(204).json({
 				message: '상점 정보 없음',
 			});
 		}

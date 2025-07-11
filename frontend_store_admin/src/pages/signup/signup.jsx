@@ -7,11 +7,13 @@ import Input from '../../components/input/input.jsx';
 import { useAuth } from '../../utils/useAuth';
 import { userSignUp } from '../../api/user/user';
 import { storeAdminRegisterSchema } from '../../utils/zod/zod.js';
+import { useSelector } from 'react-redux';
 
 const SignUp = () => {
 	const navigate = useNavigate();
 
-	const { isAuthenticated } = useAuth();
+	const isAuthenticated = (state) => state.auth.isAuthenticated;
+
 	const [errorMessage, setErrorMessage] = useState('');
 	const {
 		register,
@@ -23,34 +25,23 @@ const SignUp = () => {
 		resolver: zodResolver(storeAdminRegisterSchema),
 	});
 
-	//Token 보유시 리다이렉트
+	// Token 보유시 리다이렉트
 	useEffect(() => {
 		if (isAuthenticated) {
 			navigate('/');
 		}
-	});
+	}, [isAuthenticated]);
 
-	const mutate = useMutation({
-		mutationFn: (data) => {
-			return userSignUp(data);
-		},
-		onSuccess: (response) => {
-			console.log('onSuccess', response);
-			if (response.status === 200) {
-				console.log('success');
-				navigate('/');
-			} else {
-				setErrorMessage(response.data.message);
-			}
-		},
-		onError: (error, newData, context) => {
-			console.log('onError', error);
-			setErrorMessage('서버에 문제가 발생했습니다.');
-		},
-	});
+	const submitForm = async (data, e) => {
+		e.preventDefault();
+		const result = await userSignUp(data);
 
-	const submitForm = (data) => {
-		mutate.mutate(data);
+		// console.log(result);
+		if (result.status === 200) {
+			navigate('/');
+		} else {
+			setErrorMessage(result.data.message);
+		}
 	};
 
 	return (

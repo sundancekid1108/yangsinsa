@@ -3,8 +3,6 @@ import keys from '../../config/keys/keys.js';
 
 const accessTokenSecret = keys.accessTokenSecret;
 const refreshTokenSecret = keys.refreshTokenSecret;
-const accessTokenLife = keys.accessTokenLife;
-const refreshTokenLife = keys.refreshTokenLife;
 
 const checkValidateToken = (token, secretKey) => {
 	try {
@@ -35,11 +33,11 @@ const verifyToken = async (req, res, next) => {
 			refreshToken,
 			refreshTokenSecret,
 		);
-		console.log('validateAccessToken', validateAccessToken);
-		console.log('validateRefreshToken', validateRefreshToken);
+		// console.log('validateAccessToken', validateAccessToken);
+		// console.log('validateRefreshToken', validateRefreshToken);
 
 		if (validateAccessToken) {
-			console.log(validateAccessToken);
+			// console.log(validateAccessToken);
 			req.body.decoded = validateAccessToken;
 			next();
 		} else {

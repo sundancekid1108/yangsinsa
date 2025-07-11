@@ -1,17 +1,16 @@
 import { React, useEffect, useRef, useState } from 'react';
 import { Outlet, useLocation, useNavigate, redirect } from 'react-router-dom';
-import { useMutation } from '@tanstack/react-query';
+import { useDispatch, useSelector } from 'react-redux';
 import { useForm } from 'react-hook-form';
 import Input from '../../components/input/input.jsx';
-import { userLogin } from '../../api/user/user.js';
-import { useAuth } from '../../utils/useAuth';
 import { storeAdminLoginSchema } from '../../utils/zod/zod';
 import { zodResolver } from '@hookform/resolvers/zod';
+import { login } from '../../stores/slice/auth/authslice';
 
 const Login = () => {
+	const dispatch = useDispatch();
 	const navigate = useNavigate();
-	const { isAuthenticated, setLogin } = useAuth();
-	const [errorMessage, setErrorMessage] = useState('');
+
 	const {
 		register,
 		handleSubmit,
@@ -22,39 +21,25 @@ const Login = () => {
 		resolver: zodResolver(storeAdminLoginSchema),
 	});
 
-	const mutate = useMutation({
-		mutationFn: (data) => {
-			return userLogin(data);
-		},
-		onSuccess: (response) => {
-			// console.log('onSuccess', response);
-			if (response.status === 200) {
-				setLogin();
-				navigate('/');
-			} else {
-				setErrorMessage(response.data.message);
-			}
-		},
-		onError: (error, newData, context) => {
-			console.log('onError', error);
-			setErrorMessage('서버에 문제가 발생했습니다.');
-		},
-	});
+	const error = useSelector((state) => state.auth.error);
+	const isAuthenticated = useSelector((state) => state.auth.isAuthenticated);
 
-	//Token 보유시 리다이렉트
-	useEffect(() => {
-		if (isAuthenticated) {
-			navigate('/');
-		}
-	});
+	const submitForm = (data, e) => {
+		e.preventDefault();
 
-	const submitForm = (data) => {
-		mutate.mutate(data);
+		// console.log(data);
+		dispatch(login(data));
 	};
 
 	const navigateToSignUp = () => {
 		navigate('/signup');
 	};
+
+	useEffect(() => {
+		if (isAuthenticated) {
+			navigate('/');
+		}
+	}, [isAuthenticated]);
 
 	return (
 		<div>
@@ -112,7 +97,7 @@ const Login = () => {
 					</button>
 				</div>
 
-				<div>{errorMessage ? errorMessage : ''}</div>
+				<div>{error ? error : ''}</div>
 			</div>
 		</div>
 	);

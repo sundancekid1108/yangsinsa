@@ -1,75 +1,68 @@
-import { React, useEffect, useRef, useState } from 'react';
-import { useQuery } from '@tanstack/react-query';
+import { React, useCallback, useEffect, useRef, useState } from 'react';
 import { Outlet, useLocation, useNavigate, redirect } from 'react-router-dom';
+import { setStoreInfo } from '../../stores/slice/store/storeslice';
+import { useDispatch, useSelector } from 'react-redux';
+import { _getMyStore } from '../../stores/slice/store/storeslice';
 import { getMyStore } from '../../api/store/store';
 
 const StoreInfo = () => {
-	const [errorMessage, setErrorMessage] = useState('');
-	const [loadingMessage, setLoadingMessage] = useState('');
-	const [myStore, setMyStore] = useState({});
-	const [storeAdminInfo, setStoreAdminInfo] = useState({});
-
-	const { data, isError, isLoading } = useQuery({
-		queryKey: ['myStoreQuery'],
-		queryFn: getMyStore,
-	});
+	const dispatch = useDispatch();
+	const navigate = useNavigate();
+	const { myStore, isLoading, error } = useSelector((state) => state.store);
 
 	useEffect(() => {
-		// getMyStore().then((response) => {
-		// 	if (response.status === 200) {
-		// 		const result = response.data.myStoreData;
-		//
-		// 		setMyStore(result);
-		// 		setStoreAdminInfo(result.storeAdmin);
-		// 	}
-		// });
+		dispatch(_getMyStore());
+	}, [_getMyStore]);
 
-		if (data) {
-			setMyStore(data.data.myStoreData);
-			setStoreAdminInfo(data.data.myStoreData.storeAdmin);
-		}
+	console.log('myStore', myStore, error);
 
-		if (isLoading) {
-			setLoadingMessage('로딩중입니다.');
-		}
-		if (isError) {
-			setErrorMessage('에러발생');
-		}
-	}, [data, setMyStore]);
+	const navigateToCreateStore = () => {
+		navigate('/store/createStore');
+	};
+
+	if (error) {
+		return <div> {error}</div>;
+	}
 
 	return (
 		<div>
 			<div>마이스토어 </div>
-			{errorMessage ? (
-				<div>Error: {errorMessage}</div>
-			) : (
-				<div>
+			<div>
+				{/* myStore 객체가 비어있는지 확인하여 스토어 존재 여부 판단 */}
+				{myStore === null ? (
 					<div>
+						<div>스토어 없음</div>{' '}
+						{/* errorMessage 대신 직접 메시지 표시 */}
+						<div>
+							<button
+								className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
+								type="submit"
+								onClick={navigateToCreateStore}
+							>
+								스토어 생성
+							</button>
+						</div>
+					</div>
+				) : (
+					<div>
+						{/* 스토어 정보가 있을 때 렌더링될 내용 (주석 처리된 부분) */}
 						<div>
 							<div>스토어명</div>
 							<div>{myStore.storeName}</div>
 						</div>
-						<div>
-							<div>스토어 관리자</div>
-							<div>{storeAdminInfo.koreanName}</div>
-						</div>
-						<div>
-							<div>스토어 세부내용</div>
-							<div>{myStore.storeDescription}</div>
-						</div>
-						<div>
-							<div>스토어 이메일</div>
-							<div>{myStore.storeEmail}</div>
-						</div>
 
+						{/* 다른 스토어 정보들도 여기에 표시할 수 있습니다 */}
+						<div>스토어 세부내용</div>
+						<div>{myStore.storeDescription}</div>
+						<div>스토어 이메일</div>
+						<div>{myStore.storeEmail}</div>
 						<div>스토어 전화번호</div>
 						<div>{myStore.storePhoneNumber}</div>
 						<div>사업자번호</div>
 						<div>{myStore.businessRegistrationCode}</div>
-						<div></div>
 					</div>
-				</div>
-			)}
+				)}
+			</div>
 		</div>
 	);
 };
