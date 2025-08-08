@@ -7,8 +7,8 @@ const config = {
     database: {
         url: process.env.MONGO_URL,
     },
-    accessTokenSecret: process.env.JWT_ACCESS_TOKEN_SECRET_KEY,
-    refreshTokenSecret: process.env.JWT_REFRESH_TOKEN_SECRET_KEY,
+    accessTokenSecretKey: process.env.JWT_ACCESS_TOKEN_SECRET_KEY,
+    refreshTokenSecretKey: process.env.JWT_REFRESH_TOKEN_SECRET_KEY,
     accessTokenLife: process.env.JWT_ACCESS_TOKEN_LIFE,
     refreshTokenLife: process.env.JWT_REFRESH_TOKEN_LIFE,
 };
