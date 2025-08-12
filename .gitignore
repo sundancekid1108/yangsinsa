@@ -399,3 +399,5 @@ FodyWeavers.xsd
 
 
 .env
+# next js
+.next
