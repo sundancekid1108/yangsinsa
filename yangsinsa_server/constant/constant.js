@@ -26,6 +26,11 @@ const constants = {
         ADMIN: 'admin',
     },
 
+    SUPERVISOR_TYPE: {
+        SERVICE: 'service',
+        MAINTENANCE: 'maintenance',
+    },
+
 
     JWT_COOKIE: 'x-jwt-cookie',
 };

@@ -24,4 +24,11 @@ const generateRefreshToken = (payload) => {
     return refreshToken;
 };
 
-export { generateAccessToken, generateRefreshToken };
+const verifyToken = (token, key) => {
+    const decoded = jwt.verify(token, key); // JWT를 검증합니다.
+    return decoded;
+}
+
+export { generateAccessToken, generateRefreshToken, verifyToken };
+
+

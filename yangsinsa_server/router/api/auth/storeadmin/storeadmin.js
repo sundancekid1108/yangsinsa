@@ -1,28 +1,26 @@
 import express from 'express';
 import {hashedPassword, comparePassword} from '../../../../utils/password.js'
-import {generateAccessToken, generateRefreshToken, verifyToken} from '../../../../utils/token.js'
-import Admin from '../../../../database/model/admin/admin.js'
+import StoreAdmin from '../../../../database/model/storeadmin/storeadmin.js'
 import config from "../../../../config/config.js";
+import {generateAccessToken, generateRefreshToken, verifyToken} from '../../../../utils/token.js'
+import jwt from "jsonwebtoken";
 
-const adminAuthRouter = express.Router();
+const storeAdminAuthRouter = express.Router();
 
-adminAuthRouter.post('/login', async (req, res) => {
+
+storeAdminAuthRouter.post('/login', async (req, res) => {
     try {
-
         const {userName, password} = req.body;
-
         // 필수 필드 체크
         if (!userName || !password) {
             return res.status(400).json({
                 message: '필수 필드를 확인해주세요.',
             });
         }
-
-        const adminUser = await Admin.findOne({ userName: userName });
-
+        const storeAdmin = await StoreAdmin.findOne({userName: userName});
 
         //유저 등록 체크
-        if (!adminUser) {
+        if (!storeAdmin) {
             return res.status(404).json({
                 message: '등록되지 않은 유저입니다.',
             });
@@ -33,16 +31,14 @@ adminAuthRouter.post('/login', async (req, res) => {
 
         const isPasswordMatch = await comparePassword(
             password,
-            adminUser.password
+            storeAdmin.password
         );
 
-
-
-        if (isPasswordMatch) {
+        if(isPasswordMatch) {
             const payload = {
-                id: adminUser.id,
-                userName: adminUser.userName,
-                adminGrade: adminUser.adminGrade,
+                id: storeAdmin.id,
+                userName: storeAdmin.userName,
+                supervisorType: storeAdmin.supervisorType,
             };
 
             const accessToken = generateAccessToken(payload);
@@ -54,7 +50,7 @@ adminAuthRouter.post('/login', async (req, res) => {
                 .header('Authorization', `Bearer ${accessToken}`)
                 .json({
                     payload
-            })
+                })
 
         } else {
             return res.status(401).json({
@@ -62,15 +58,18 @@ adminAuthRouter.post('/login', async (req, res) => {
             });
         }
 
+
+
+
+
     } catch (error) {
         return res.status(500).json(
             error
         );
     }
 })
-adminAuthRouter.post('/register', async (req, res) => {
+storeAdminAuthRouter.post('/register', async (req, res) => {
     try {
-
         const {userName, password, koreanName, phoneNumber} = req.body;
 
         // 필드 미입력 체크
@@ -82,7 +81,7 @@ adminAuthRouter.post('/register', async (req, res) => {
 
         // 유저명 중복 체크
         if (userName) {
-            const isDuplicateUserName = await Admin.findOne({
+            const isDuplicateUserName = await StoreAdmin.findOne({
                 userName: userName,
             });
             if (isDuplicateUserName) {
@@ -93,40 +92,91 @@ adminAuthRouter.post('/register', async (req, res) => {
         }
 
         // 전화번호 중복 체크
-        if (phoneNumber) {
-            const isDuplicateAdminUserPhoneNumber = await Admin.findOne({
+        if(phoneNumber) {
+            const isDuplicatePhoneNumber = await StoreAdmin.findOne({
                 phoneNumber: phoneNumber,
-            });
-            if (isDuplicateAdminUserPhoneNumber) {
+            })
+            if (isDuplicatePhoneNumber) {
                 return res
                     .status(400)
-                    .json({ message: '이미 등록된 전화번호입니다.' });
+                    .json({ message: '이미 등록된  전화번호입니다.' });
             }
         }
+
 
         //패스워드 암호화
         const encryptedPassword = await  hashedPassword(password)
 
-
-
-
         // 유저 정보 생성
-        const newAdminUser = new Admin({
+        const newStoreAdmin = await StoreAdmin.create({
             userName: userName,
             password: encryptedPassword,
             koreanName: koreanName,
             phoneNumber: phoneNumber,
-        });
-
-
+        })
 
         // 유저 정보 저장
-
-            await newAdminUser.save()
-            return res.status(200).json(newAdminUser);
-
+        await newStoreAdmin.save()
+        return res.status(200).json({message: "저장 완료"});
 
 
+    } catch (error) {
+        return res.status(500).json({
+            error
+        });
+    }
+})
+storeAdminAuthRouter.post('/updatestoreadmininfo', async (req, res) => {
+    try {
+        console.log(req.body);
+        const updateStoreAdminData = req.body
+        const storeAdmin = await StoreAdmin.findById(updateStoreAdminData.id);
+
+        if(!storeAdmin) {
+            return res.status(404).json({
+                message: '유저 정보를 찾을 수 없습니다.',
+            })
+        }
+
+        // 패스워드 업데이트
+        if(updateStoreAdminData.password){
+            const password = updateStoreAdminData.password
+            const encryptedPassword = await hashedPassword(password)
+            storeAdmin.password = encryptedPassword
+        }
+
+        // 한국이름 업데이트
+        if(updateStoreAdminData.koreanName) {
+            storeAdmin.koreanName = updateStoreAdminData.koreanName;
+        }
+
+
+        // 영어이름 업데이트
+
+        if(updateStoreAdminData.firstName) {
+            storeAdmin.firstName = updateStoreAdminData.firstName;
+        }
+
+        if(updateStoreAdminData.lastName) {
+            storeAdmin.lastName = updateStoreAdminData.lastName;
+        }
+
+        // 전화번호 업데이트(중복 체크 포함)
+        if( updateStoreAdminData.phoneNumber ) {
+            const checkDuplicatePhoneNumber = await storeAdmin.findOne({
+                phoneNumber: updateStoreAdminData.phoneNumber,
+            })
+
+            if(checkDuplicatePhoneNumber){
+                return res.status(400).json({message: '이미 등록된 전화번호입니다.',})
+            } else {
+                storeAdmin.phoneNumber = updateStoreAdminData.phoneNumber
+            }
+
+        }
+
+        await storeAdmin.save();
+        return res.status(200).json({message: "저장 완료"});
 
     } catch (error) {
         console.log(error);
@@ -135,94 +185,29 @@ adminAuthRouter.post('/register', async (req, res) => {
         });
     }
 })
-
-
-adminAuthRouter.post('/updateadmininfo', async (req, res) => {
-    try {
-        const updateAdminUserData = req.body;
-
-        console.log("updateAdminUserData", updateAdminUserData);
-        const adminUser = await Admin.findById(updateAdminUserData.id);
-        if (!adminUser) {
-            return res.status(404).json({
-                message: '유저 정보를 찾을 수 없습니다.',
-            })
-        }
-
-        // 패스워드 업데이트
-        if (updateAdminUserData.password) {
-            const password = updateAdminUserData.password;
-            const encryptedPassword = await  hashedPassword(password)
-            adminUser.password = encryptedPassword
-        }
-
-        // 한국이름 업데이트
-        if(updateAdminUserData.koreanName) {
-            adminUser.koreanName = updateAdminUserData.koreanName;
-        }
-
-        // 영어이름 업데이트
-
-        if(updateAdminUserData.firstName) {
-            adminUser.firstName = updateAdminUserData.firstName;
-        }
-
-        if(updateAdminUserData.lastName) {
-            adminUser.lastName = updateAdminUserData.lastName;
-        }
-
-
-        // 전화번호 업데이트(중복 체크 포함)
-        if(updateAdminUserData.phoneNumber) {
-            const checkDuplicatePhoneNumber = await Admin.findOne({phoneNumber: updateAdminUserData.phoneNumber});
-            if (checkDuplicatePhoneNumber) {
-                return res.status(400).json({message: '이미 등록된 전화번호입니다.',})
-            } else {
-                adminUser.phoneNumber = updateAdminUserData.phoneNumber;
-            }
-        }
-
-
-        await adminUser.save()
-        return res.status(200).json({message: "저장 완료"});
-
-
-    } catch (error) {
-        return res.status(500).json({
-            error
-        });
-
-    }
-
-})
-
-
-adminAuthRouter.get('/updateaccesstoken', async (req, res) => {
+storeAdminAuthRouter.get('/updateaccesstoken', async (req, res) => {
     try {
         const refreshTokenSecretKey = config.refreshTokenSecretKey
         const headers = req.headers;
         const refreshToken = headers.cookie.split('refreshToken=')[1];
         const decoded = verifyToken(refreshToken, refreshTokenSecretKey);
-
         const payload = {
             id: decoded.id,
             userName: decoded.userName,
-            adminGrade: decoded.adminGrade,
-        };
+        }
         const newAccessToken = generateAccessToken(payload);
+
         return res
             .status(200)
             .header('Authorization', `Bearer ${newAccessToken}`)
             .json({ message: 'Access Token 재발급' });
-
-
     } catch (error) {
         return res.status(500).json({
             error
         });
-
     }
+
 })
 
 
-export default adminAuthRouter
+export default storeAdminAuthRouter

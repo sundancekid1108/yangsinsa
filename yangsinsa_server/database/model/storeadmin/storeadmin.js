@@ -4,7 +4,7 @@ const Schema = Mongoose.Schema;
 
 const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}$/;
 
-const AdminSchema = new Schema(
+const StoreAdminSchema = new Schema(
 	{
 		userName: {
 			type: String,
@@ -21,29 +21,27 @@ const AdminSchema = new Schema(
 		},
 		koreanName: {
 			type: String,
-			required: true,
+            required: true,
             match: [ /[ㄱ-ㅎ|가-힣_]{1,30}/, '이름은 한글만 입력 가능합니다.']
 		},
 
 		firstName: {
-			type: String,
-			trim: true,
+            type: String,
+            trim: true,
             uppercase: true,
             match: [/[a-zA-Z_]{1,50}/, '영어만 입력']
 		},
 		lastName: {
-			type: String,
-			maximum: 100,
-			trim: true,
+            type: String,
+            trim: true,
             uppercase: true,
             match: [/[a-zA-Z_]{1,50}/, '영어만 입력']
 		},
-
 		phoneNumber: {
-			type: String,
-			unique: true,
-			required: true,
-			match: [/[0-9]{3,20}$/, '전화번호는 숫자만 입력 가능합니다.'],
+            type: String,
+            unique: true,
+            required: true,
+            match: [/[0-9]{3,20}$/, '전화번호는 숫자만 입력 가능합니다.'],
 		},
 
         email: {
@@ -55,19 +53,26 @@ const AdminSchema = new Schema(
             match: [emailRegex, '유효한 이메일 형식이 아닙니다.']
         },
 
-		adminGrade: {
+		isActive: {
+			type: Boolean,
+			default: true,
+            required: true,
+		},
+
+		supervisorType: {
 			type: String,
 			enum: [
-				constants.ADMIN_LEVEL.ADMIN,
-				constants.ADMIN_LEVEL.SUPER_ADMIN,
+				constants.SUPERVISOR_TYPE.SERVICE,
+				constants.SUPERVISOR_TYPE.MAINTENANCE,
 			],
-			default: constants.ADMIN_LEVEL.ADMIN,
+			default: constants.SUPERVISOR_TYPE.SERVICE,
 		},
 
 		avatar: {
 			type: String,
 			default: '',
 		},
+
 		updatedDate: {
 			type: Date,
 			default: Date.now,
@@ -77,14 +82,10 @@ const AdminSchema = new Schema(
 			type: Date,
 			default: Date.now,
 		},
-		isActive: {
-			type: Boolean,
-			default: true,
-		},
 	},
 	{ timestamps: true },
 	{ versionKey: false },
 );
 
-const Admin = Mongoose.model('Admin', AdminSchema);
-export default Admin;
+const StoreAdmin = Mongoose.model('StoreAdmin', StoreAdminSchema);
+export default StoreAdmin;
