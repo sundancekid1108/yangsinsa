@@ -1,18 +1,22 @@
-import Mongoose from 'mongoose';
-import constants from '../../../constant/constant.js';
-const Schema = Mongoose.Schema;
+import Mongoose from 'mongoose'
+import uniqueValidator from 'mongoose-unique-validator'
+import constants from '../../../constant/constant.js'
+const Schema = Mongoose.Schema
 
-const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}$/;
+const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}$/
 
 const AdminSchema = new Schema(
 	{
 		userName: {
 			type: String,
 			trim: true,
-            lowercase: true,
+			lowercase: true,
 			unique: true,
 			required: true,
-            match: [ /[a-z0-9_]{4,30}/, '영어, 숫자 조합으로 4~30자까지 입력 가능합니다.']
+			match: [
+				/[a-z0-9_]{4,30}/,
+				'영어, 숫자 조합으로 4~30자까지 입력 가능합니다.',
+			],
 		},
 
 		password: {
@@ -22,21 +26,21 @@ const AdminSchema = new Schema(
 		koreanName: {
 			type: String,
 			required: true,
-            match: [ /[ㄱ-ㅎ|가-힣_]{1,30}/, '이름은 한글만 입력 가능합니다.']
+			match: [/[ㄱ-ㅎ|가-힣_]{1,30}/, '이름은 한글만 입력 가능합니다.'],
 		},
 
 		firstName: {
 			type: String,
 			trim: true,
-            uppercase: true,
-            match: [/[a-zA-Z_]{1,50}/, '영어만 입력']
+			uppercase: true,
+			match: [/[a-zA-Z_]{1,50}/, '영어로 입력해주세요'],
 		},
 		lastName: {
 			type: String,
 			maximum: 100,
 			trim: true,
-            uppercase: true,
-            match: [/[a-zA-Z_]{1,50}/, '영어만 입력']
+			uppercase: true,
+			match: [/[a-zA-Z_]{1,50}/, '영어로 입력해주세요'],
 		},
 
 		phoneNumber: {
@@ -46,21 +50,24 @@ const AdminSchema = new Schema(
 			match: [/[0-9]{3,20}$/, '전화번호는 숫자만 입력 가능합니다.'],
 		},
 
-        email: {
-            type: String,
-            trim: true,
-            unique: true,
-            required: true,
-            lowercase: true,
-            match: [emailRegex, '유효한 이메일 형식이 아닙니다.']
-        },
-
-		adminGrade: {
+		email: {
 			type: String,
-			enum: [
-				constants.ADMIN_LEVEL.ADMIN,
-				constants.ADMIN_LEVEL.SUPER_ADMIN,
-			],
+			trim: true,
+			unique: true,
+			sparse: true,
+			lowercase: true,
+			match: [emailRegex, '유효한 이메일 형식이 아닙니다.'],
+		},
+
+		grade: {
+			type: String,
+			enum: {
+				values: [
+					constants.ADMIN_LEVEL.ADMIN,
+					constants.ADMIN_LEVEL.SUPER_ADMIN,
+				],
+				message: '카테고리가 유효하지 않습니다.',
+			},
 			default: constants.ADMIN_LEVEL.ADMIN,
 		},
 
@@ -80,11 +87,12 @@ const AdminSchema = new Schema(
 		isActive: {
 			type: Boolean,
 			default: true,
+			required: true,
 		},
 	},
 	{ timestamps: true },
-	{ versionKey: false },
-);
+	{ versionKey: false }
+)
 
-const Admin = Mongoose.model('Admin', AdminSchema);
-export default Admin;
+const Admin = Mongoose.model('Admin', AdminSchema)
+export default Admin
