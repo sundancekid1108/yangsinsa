@@ -24,9 +24,27 @@ const generateRefreshToken = (payload) => {
 	return refreshToken
 }
 
-const verifyToken = (token, key) => {
-	const decodedResult = jwt.verify(token, key) // JWT를 검증합니다.
-	return decodedResult
+const verifyAccessToken = (token) => {
+	try {
+		const decodedResult = jwt.verify(token, accessTokenSecretKey) // JWT를 검증합니다.
+		return decodedResult
+	} catch (error) {
+		return false
+	}
 }
 
-export { generateAccessToken, generateRefreshToken, verifyToken }
+const verifyRefreshToken = (token) => {
+	try {
+		const decodedResult = jwt.verify(token, refreshTokenSecretKey) // JWT를 검증합니다.
+		return decodedResult
+	} catch (error) {
+		return false
+	}
+}
+
+export {
+	generateAccessToken,
+	generateRefreshToken,
+	verifyAccessToken,
+	verifyRefreshToken,
+}

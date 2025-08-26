@@ -4,6 +4,12 @@ import storeRouter from './api/store/store.js'
 import adminAuthRouter from './api/auth/admin/admin.js'
 import storeAdminAuthRouter from './api/auth/storeadmin/storeadmin.js'
 import userAuthRouter from './api/auth/user/user.js'
+import brandRouter from './api/brand/brand.js'
+
+import {
+	validateTokenLifeTime,
+	checkStoreAdminAuth,
+} from '../middleware/checkauth/checkauth.js'
 
 const router = express.Router()
 
@@ -18,6 +24,7 @@ router.get('/', (req, res) => {
 router.use('/auth/admin', adminAuthRouter)
 router.use('/auth/storeadmin', storeAdminAuthRouter)
 router.use('/auth/user', userAuthRouter)
-router.use('/store', storeRouter)
+router.use('/store', validateTokenLifeTime, checkStoreAdminAuth, storeRouter)
+router.use('/brand', validateTokenLifeTime, checkStoreAdminAuth, brandRouter)
 
 export default router

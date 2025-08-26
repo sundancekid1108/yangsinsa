@@ -2,8 +2,6 @@ import Mongoose from 'mongoose'
 import constants from '../../../constant/constant.js'
 const Schema = Mongoose.Schema
 
-const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}$/
-
 const StoreAdminSchema = new Schema(
 	{
 		userName: {
@@ -12,8 +10,10 @@ const StoreAdminSchema = new Schema(
 			lowercase: true,
 			unique: true,
 			required: true,
+			minLength: [4, '유저명은 4~30글자까지 가능합니다.'],
+			maxLength: [30, '유저명은 4~30글자까지 가능합니다.'],
 			match: [
-				/[a-z0-9_]{4,30}/,
+				constants.REGEX.ENG_NUMBER_REGEX,
 				'영어, 숫자 조합으로 4~30자까지 입력 가능합니다.',
 			],
 		},
@@ -25,26 +25,36 @@ const StoreAdminSchema = new Schema(
 		koreanName: {
 			type: String,
 			required: true,
-			match: [/[ㄱ-ㅎ|가-힣_]{1,30}/, '이름은 한글만 입력 가능합니다.'],
+			maxLength: [30, '이름은 최대 30글자까지 가능합니다.'],
+			match: [
+				constants.REGEX.KOR_REGEX,
+				'이름은 한글만 입력 가능합니다.',
+			],
 		},
 
 		firstName: {
 			type: String,
 			trim: true,
 			uppercase: true,
-			match: [/[a-zA-Z_]{1,50}/, '영어로 입력해주세요'],
+			maxLength: [50, '영문 성명은  최대 50글자까지 가능합니다.'],
+			match: [constants.REGEX.ENG_REGEX, '영어로 입력해주세요'],
 		},
 		lastName: {
 			type: String,
 			trim: true,
 			uppercase: true,
-			match: [/[a-zA-Z_]{1,50}/, '영어로 입력해주세요'],
+			maxLength: [50, '영문 성명은  최대 50글자까지 가능합니다.'],
+			match: [constants.REGEX.ENG_REGEX, '영어로 입력해주세요'],
 		},
 		phoneNumber: {
 			type: String,
 			unique: true,
 			required: true,
-			match: [/[0-9]{3,20}$/, '전화번호는 숫자만 입력 가능합니다.'],
+			maxLength: [20, '전화번호를 확인 해주세요.'],
+			match: [
+				constants.REGEX.MOBILEPHONE,
+				'전화번호는 숫자만 입력 가능합니다.',
+			],
 		},
 
 		email: {
@@ -53,7 +63,10 @@ const StoreAdminSchema = new Schema(
 			unique: true,
 			sparse: true,
 			lowercase: true,
-			match: [emailRegex, '유효한 이메일 형식이 아닙니다.'],
+			match: [
+				constants.REGEX.EMAIL_REGEX,
+				'유효한 이메일 형식이 아닙니다.',
+			],
 		},
 
 		isActive: {

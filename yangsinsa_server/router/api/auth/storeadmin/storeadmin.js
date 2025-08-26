@@ -5,8 +5,10 @@ import config from '../../../../config/config.js'
 import {
 	generateAccessToken,
 	generateRefreshToken,
-	verifyToken,
+	verifyAccessToken,
+	verifyRefreshToken,
 } from '../../../../utils/token.js'
+import constant from '../../../../constant/constant.js'
 
 const storeAdminAuthRouter = express.Router()
 
@@ -98,6 +100,17 @@ storeAdminAuthRouter.post('/register', async (req, res) => {
 			}
 		}
 
+		// 패스워드 검증
+		const passwordRegex = constant.REGEX.PASSWORD_REGEX
+		const passwordCheck = passwordRegex.test(password)
+		console.log(passwordCheck)
+		if (!passwordCheck) {
+			return res.status(400).json({
+				message:
+					'비밀번호는 영문, 숫자, 특수문자 조합으로 8자리 이상 입력 가능합니다.',
+			})
+		}
+
 		//패스워드 암호화
 		const encryptedPassword = await hashedPassword(password)
 
@@ -113,15 +126,23 @@ storeAdminAuthRouter.post('/register', async (req, res) => {
 		await newStoreAdmin.save()
 		return res.status(200).json({ message: '저장 완료' })
 	} catch (error) {
-		if (error.name === 'MongoServerError' && error.code === 11000) {
+		if (error.name === 'ValidationError') {
+			// Mongoose validation errors (e.g., regex mismatch, required field missing)
+			const errorMessage = Object.values(error.errors).map(
+				(err) => err.message
+			)
+			return res.status(400).json({
+				message: errorMessage,
+			})
+		} else if (error.name === 'MongoServerError' && error.code === 11000) {
 			const field = Object.keys(error.keyValue)[0]
 			if (field === 'userName') {
 				return res
-					.status(500)
+					.status(409)
 					.json({ message: '중복된 유저명 입니다.' })
 			} else if (field === 'phoneNumber') {
 				return res
-					.status(500)
+					.status(409)
 					.json({ message: '중복된 전화번호 입니다.' })
 			}
 		}
@@ -147,6 +168,16 @@ storeAdminAuthRouter.post('/updatestoreadmininfo', async (req, res) => {
 		// 패스워드 업데이트
 		if (updateStoreAdminData.password) {
 			const password = updateStoreAdminData.password
+			// 패스워드 검증
+			const passwordRegex = constant.REGEX.PASSWORD_REGEX
+			const passwordCheck = passwordRegex.test(password)
+
+			if (!passwordCheck) {
+				return res.status(400).json({
+					message:
+						'비밀번호는 영문, 숫자, 특수문자 조합으로 8자리 이상 입력 가능합니다.',
+				})
+			}
 			const encryptedPassword = await hashedPassword(password)
 			storeAdmin.password = encryptedPassword
 		}
@@ -179,17 +210,25 @@ storeAdminAuthRouter.post('/updatestoreadmininfo', async (req, res) => {
 		await storeAdmin.save()
 		return res.status(200).json({ message: '저장 완료' })
 	} catch (error) {
-		if (error.name === 'MongoServerError' && error.code === 11000) {
+		if (error.name === 'ValidationError') {
+			// Mongoose validation errors (e.g., regex mismatch, required field missing)
+			const errorMessage = Object.values(error.errors).map(
+				(err) => err.message
+			)
+			return res.status(400).json({
+				message: errorMessage,
+			})
+		} else if (error.name === 'MongoServerError' && error.code === 11000) {
 			const field = Object.keys(error.keyValue)[0]
 			if (field === 'email') {
 				return res
-					.status(500)
+					.status(409)
 					.json({ message: '중복된 이메일 입니다.' })
 			}
 
 			if (field === 'phoneNumber') {
 				return res
-					.status(500)
+					.status(409)
 					.json({ message: '중복된 전화번호 입니다.' })
 			}
 		}
@@ -203,7 +242,7 @@ storeAdminAuthRouter.get('/updateaccesstoken', async (req, res) => {
 		const refreshTokenSecretKey = config.refreshTokenSecretKey
 		const headers = req.headers
 		const refreshToken = headers.cookie.split('refreshToken=')[1]
-		const decodedResult = verifyToken(refreshToken, refreshTokenSecretKey)
+		const decodedResult = verifyRefreshToken(refreshToken)
 		const payload = {
 			id: decodedResult.id,
 			userName: decodedResult.userName,
