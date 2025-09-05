@@ -2,7 +2,11 @@ import express from 'express'
 import bcrypt from 'bcryptjs'
 import jwt from 'jsonwebtoken'
 import User from '../../../../database/model/user/user.js'
-import { hashedPassword, comparePassword } from '../../../../utils/password.js'
+import {
+	hashedPassword,
+	comparePassword,
+	validatePasswordType,
+} from '../../../../utils/password.js'
 import {
 	generateAccessToken,
 	generateRefreshToken,
@@ -31,7 +35,7 @@ userAuthRouter.post('/login', async (req, res) => {
 			})
 		}
 
-		const passwordMatch = await bcrypt.compare(password, user.password)
+		const passwordMatch = await comparePassword(password, user.password)
 		if (!passwordMatch) {
 			return res.status(400).json({
 				message: '아이디, 패스워드를 확인해주세요.',
@@ -75,8 +79,7 @@ userAuthRouter.post('/register', async (req, res) => {
 		}
 
 		// 패스워드 검증
-		const passwordRegex = constant.REGEX.PASSWORD_REGEX
-		const passwordCheck = passwordRegex.test(password)
+		const passwordCheck = validatePasswordType(password)
 		console.log(passwordCheck)
 		if (!passwordCheck) {
 			return res.status(400).json({
@@ -156,8 +159,7 @@ userAuthRouter.post('/updateuserinfo', async (req, res) => {
 		if (updateUserInfo.password) {
 			const password = updateUserInfo.password
 			// 패스워드 검증
-			const passwordRegex = constant.REGEX.PASSWORD_REGEX
-			const passwordCheck = passwordRegex.test(password)
+			const passwordCheck = validatePasswordType(password)
 
 			if (!passwordCheck) {
 				return res.status(400).json({

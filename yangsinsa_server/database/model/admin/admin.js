@@ -54,7 +54,7 @@ const AdminSchema = new Schema(
 			required: true,
 			maxLength: [20, '전화번호를 확인 해주세요.'],
 			match: [
-				constants.REGEX.MOBILEPHONE,
+				constants.REGEX.MOBILEPHONE_REGEX,
 				'전화번호는 숫자만 입력 가능합니다.',
 			],
 		},
@@ -75,12 +75,12 @@ const AdminSchema = new Schema(
 			type: String,
 			enum: {
 				values: [
-					constants.ADMIN_LEVEL.ADMIN,
-					constants.ADMIN_LEVEL.SUPER_ADMIN,
+					constants.ADMIN_GRADE.ADMIN,
+					constants.ADMIN_GRADE.SUPER_ADMIN,
 				],
 				message: '카테고리가 유효하지 않습니다.',
 			},
-			default: constants.ADMIN_LEVEL.ADMIN,
+			default: constants.ADMIN_GRADE.ADMIN,
 		},
 
 		avatar: {

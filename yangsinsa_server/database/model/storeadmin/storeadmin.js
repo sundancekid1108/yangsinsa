@@ -52,7 +52,7 @@ const StoreAdminSchema = new Schema(
 			required: true,
 			maxLength: [20, '전화번호를 확인 해주세요.'],
 			match: [
-				constants.REGEX.MOBILEPHONE,
+				constants.REGEX.MOBILEPHONE_REGEX,
 				'전화번호는 숫자만 입력 가능합니다.',
 			],
 		},
@@ -79,12 +79,12 @@ const StoreAdminSchema = new Schema(
 			type: String,
 			enum: {
 				values: [
-					constants.SUPERVISOR_GRADE.SERVICE,
-					constants.SUPERVISOR_GRADE.MAINTENANCE,
+					constants.STORE_ADMIN_GRADE.SERVICE,
+					constants.STORE_ADMIN_GRADE.MAINTENANCE,
 				],
 				message: '카테고리가 유효하지 않습니다.',
 			},
-			default: constants.SUPERVISOR_GRADE.SERVICE,
+			default: constants.STORE_ADMIN_GRADE.SERVICE,
 		},
 
 		avatar: {

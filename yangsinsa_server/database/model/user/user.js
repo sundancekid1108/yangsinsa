@@ -53,7 +53,7 @@ const userSchema = new Schema(
 			required: true,
 			maxLength: [20, '전화번호를 확인 해주세요.'],
 			match: [
-				constants.REGEX.MOBILEPHONE,
+				constants.REGEX.MOBILEPHONE_REGEX,
 				'전화번호는 숫자만 입력 가능합니다.',
 			],
 		},

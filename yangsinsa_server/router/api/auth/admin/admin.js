@@ -1,5 +1,9 @@
 import express from 'express'
-import { hashedPassword, comparePassword } from '../../../../utils/password.js'
+import {
+	hashedPassword,
+	comparePassword,
+	validatePasswordType,
+} from '../../../../utils/password.js'
 import {
 	generateAccessToken,
 	generateRefreshToken,
@@ -79,8 +83,7 @@ adminAuthRouter.post('/register', async (req, res) => {
 		}
 
 		// 패스워드 검증
-		const passwordRegex = constant.REGEX.PASSWORD_REGEX
-		const passwordCheck = passwordRegex.test(password)
+		const passwordCheck = validatePasswordType(password)
 
 		if (!passwordCheck) {
 			return res.status(400).json({
@@ -146,8 +149,7 @@ adminAuthRouter.post('/updateadmininfo', async (req, res) => {
 		if (updateAdminUserData.password) {
 			const password = updateAdminUserData.password
 			// 패스워드 검증
-			const passwordRegex = constant.REGEX.PASSWORD_REGEX
-			const passwordCheck = passwordRegex.test(password)
+			const passwordCheck = validatePasswordType(password)
 
 			if (!passwordCheck) {
 				return res.status(400).json({

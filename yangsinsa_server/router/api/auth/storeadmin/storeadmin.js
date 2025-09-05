@@ -1,7 +1,11 @@
 import express from 'express'
-import { hashedPassword, comparePassword } from '../../../../utils/password.js'
+import {
+	hashedPassword,
+	comparePassword,
+	validatePasswordType,
+} from '../../../../utils/password.js'
 import StoreAdmin from '../../../../database/model/storeadmin/storeadmin.js'
-import config from '../../../../config/config.js'
+import Authority from '../../../../database/model/authority/authority.js'
 import {
 	generateAccessToken,
 	generateRefreshToken,
@@ -101,9 +105,7 @@ storeAdminAuthRouter.post('/register', async (req, res) => {
 		}
 
 		// 패스워드 검증
-		const passwordRegex = constant.REGEX.PASSWORD_REGEX
-		const passwordCheck = passwordRegex.test(password)
-		console.log(passwordCheck)
+		const passwordCheck = validatePasswordType(password)
 		if (!passwordCheck) {
 			return res.status(400).json({
 				message:
@@ -169,8 +171,7 @@ storeAdminAuthRouter.post('/updatestoreadmininfo', async (req, res) => {
 		if (updateStoreAdminData.password) {
 			const password = updateStoreAdminData.password
 			// 패스워드 검증
-			const passwordRegex = constant.REGEX.PASSWORD_REGEX
-			const passwordCheck = passwordRegex.test(password)
+			const passwordCheck = validatePasswordType(password)
 
 			if (!passwordCheck) {
 				return res.status(400).json({
@@ -237,9 +238,9 @@ storeAdminAuthRouter.post('/updatestoreadmininfo', async (req, res) => {
 		})
 	}
 })
+
 storeAdminAuthRouter.get('/updateaccesstoken', async (req, res) => {
 	try {
-		const refreshTokenSecretKey = config.refreshTokenSecretKey
 		const headers = req.headers
 		const refreshToken = headers.cookie.split('refreshToken=')[1]
 		const decodedResult = verifyRefreshToken(refreshToken)
