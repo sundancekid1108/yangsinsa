@@ -156,7 +156,7 @@ storeRouter.post('/updatestore', async (req, res) => {
 		const updateStoreData = req.body
 		const storeData = await Store.findById(updateStoreData.id)
 		if (!storeData) {
-			return res.status(404).json({
+			return res.status(400).json({
 				message: '스토어 정보를 찾을 수 없습니다.',
 			})
 		}

@@ -29,7 +29,7 @@ storeAdminAuthRouter.post('/login', async (req, res) => {
 
 		//유저 등록 체크
 		if (!storeAdmin) {
-			return res.status(404).json({
+			return res.status(400).json({
 				message: '등록되지 않은 유저입니다.',
 			})
 		}
@@ -57,11 +57,9 @@ storeAdminAuthRouter.post('/login', async (req, res) => {
 					httpOnly: true,
 				})
 				.header('Authorization', `Bearer ${accessToken}`)
-				.json({
-					payload,
-				})
+				.json(payload)
 		} else {
-			return res.status(401).json({
+			return res.status(400).json({
 				message: '아이디, 패스워드를 확인해주세요.',
 			})
 		}
@@ -78,30 +76,6 @@ storeAdminAuthRouter.post('/register', async (req, res) => {
 			return res
 				.status(400)
 				.json({ message: '필수 필드를 입력해주세요.' })
-		}
-
-		// 유저명 중복 체크
-		if (userName) {
-			const isDuplicateUserName = await StoreAdmin.findOne({
-				userName: userName,
-			})
-			if (isDuplicateUserName) {
-				return res
-					.status(400)
-					.json({ message: '이미 등록된  유저명입니다.' })
-			}
-		}
-
-		// 전화번호 중복 체크
-		if (phoneNumber) {
-			const isDuplicatePhoneNumber = await StoreAdmin.findOne({
-				phoneNumber: phoneNumber,
-			})
-			if (isDuplicatePhoneNumber) {
-				return res
-					.status(400)
-					.json({ message: '이미 등록된  전화번호입니다.' })
-			}
 		}
 
 		// 패스워드 검증
@@ -162,7 +136,7 @@ storeAdminAuthRouter.post('/updatestoreadmininfo', async (req, res) => {
 		const storeAdmin = await StoreAdmin.findById(updateStoreAdminData.id)
 
 		if (!storeAdmin) {
-			return res.status(404).json({
+			return res.status(400).json({
 				message: '유저 정보를 찾을 수 없습니다.',
 			})
 		}

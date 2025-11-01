@@ -57,7 +57,7 @@ userAuthRouter.post('/login', async (req, res) => {
 					httpOnly: true,
 				})
 				.header('Authorization', `Bearer ${token}`)
-				.json({ payload })
+				.json(payload)
 		}
 	} catch (error) {
 		return res.status(500).json({
@@ -150,7 +150,7 @@ userAuthRouter.post('/updateuserinfo', async (req, res) => {
 		const updateUserInfo = req.body
 		const user = await User.findById(updateUserInfo.id)
 		if (!user) {
-			return res.status(404).json({
+			return res.status(400).json({
 				message: '유저 정보를 찾을 수 없습니다.',
 			})
 		}

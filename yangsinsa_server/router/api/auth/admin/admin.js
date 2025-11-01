@@ -31,8 +31,8 @@ adminAuthRouter.post('/login', async (req, res) => {
 
 		//유저 등록 체크
 		if (!adminUser) {
-			return res.status(404).json({
-				message: '등록되지 않은 유저입니다.',
+			return res.status(400).json({
+				message: '계정 정보를 확인해주세요.',
 			})
 		}
 
@@ -59,12 +59,10 @@ adminAuthRouter.post('/login', async (req, res) => {
 					httpOnly: true,
 				})
 				.header('Authorization', `Bearer ${accessToken}`)
-				.json({
-					payload,
-				})
+				.json(payload)
 		} else {
-			return res.status(401).json({
-				message: '아이디, 패스워드를 확인해주세요.',
+			return res.status(400).json({
+				message: '계정 정보를 확인해주세요.',
 			})
 		}
 	} catch (error) {
@@ -106,7 +104,7 @@ adminAuthRouter.post('/register', async (req, res) => {
 		// 유저 정보 저장
 
 		await newAdminUser.save()
-		return res.status(200).json(newAdminUser)
+		return res.status(200).json({ message: '저장 완료' })
 	} catch (error) {
 		if (error.name === 'ValidationError') {
 			// Mongoose validation errors (e.g., regex mismatch, required field missing)
@@ -140,7 +138,7 @@ adminAuthRouter.post('/updateadmininfo', async (req, res) => {
 		console.log('updateAdminUserData', updateAdminUserData)
 		const adminUser = await Admin.findById(updateAdminUserData.id)
 		if (!adminUser) {
-			return res.status(404).json({
+			return res.status(400).json({
 				message: '유저 정보를 찾을 수 없습니다.',
 			})
 		}
