@@ -1,5 +1,10 @@
+import Navbar from '../navbar/navbar.jsx'
 const Header = () => {
-	return <div>header</div>
+	return (
+		<div>
+			<Navbar />
+		</div>
+	)
 }
 
 export default Header

@@ -7,9 +7,8 @@ const Navbar = () => {
 	const [isOpen, setIsOpen] = useState(false)
 	const location = useLocation()
 	const navItems = [
-		{ name: '홈', href: '#home', icon: HomeIcon },
-		{ name: '서비스', href: '#services', icon: UserIcon },
-		{ name: '문의', href: '#contact', icon: UserIcon },
+		{ name: '스토어 관리', href: 'services', icon: UserIcon },
+		{ name: '문의', href: 'contact', icon: UserIcon },
 	]
 
 	return (
@@ -22,7 +21,7 @@ const Navbar = () => {
 							href="/"
 							className="text-white text-xl font-bold tracking-wider"
 						>
-							MyBrand
+							YANGSINSA
 						</a>
 					</div>
 
@@ -36,10 +35,10 @@ const Navbar = () => {
 									className="text-gray-300 hover:bg-gray-700 hover:text-white px-3 py-2 rounded-md text-sm font-medium flex items-center"
 								>
 									{/* Heroicon 사용: 크기와 색상은 Tailwind 클래스로 제어 */}
-									<item.icon
-										className="h-5 w-5 mr-1"
-										aria-hidden="true"
-									/>
+									{/*<item.icon*/}
+									{/*	className="h-5 w-5 mr-1"*/}
+									{/*	aria-hidden="true"*/}
+									{/*/>*/}
 									{item.name}
 								</a>
 							))}

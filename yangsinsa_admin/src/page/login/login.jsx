@@ -1,10 +1,10 @@
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useForm } from 'react-hook-form'
-
 import { zodResolver } from '@hookform/resolvers/zod'
 import { AdminSchema } from '../../utils/zod/zod.js'
 import axiosApi from '../../utils/axios/axios.js'
+import authStore from '../../utils/zustand/authstore.js'
 
 const Login = () => {
 	const {
@@ -27,8 +27,10 @@ const Login = () => {
 			const response = await axiosApi.post('/auth/admin/login', data)
 
 			if (response.status === 200) {
-				console.log(response)
-				// navigate('/')
+				const token = response.headers.authorization
+				console.log(token)
+				authStore.getState().setLogIn(token)
+				navigate('/')
 			}
 		} catch (error) {
 			console.error('Validation failed:', error)
