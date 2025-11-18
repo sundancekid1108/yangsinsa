@@ -7,7 +7,8 @@ const accessTokenLife = config.accessTokenLife
 const refreshTokenLife = config.refreshTokenLife
 
 const generateAccessToken = (payload) => {
-	const accessToken = jwt.sign(payload, accessTokenSecretKey, {
+	let accessToken
+	accessToken = jwt.sign(payload, accessTokenSecretKey, {
 		algorithm: 'HS256',
 
 		expiresIn: accessTokenLife,
@@ -16,7 +17,8 @@ const generateAccessToken = (payload) => {
 }
 
 const generateRefreshToken = (payload) => {
-	const refreshToken = jwt.sign(payload, refreshTokenSecretKey, {
+	let refreshToken
+	refreshToken = jwt.sign(payload, refreshTokenSecretKey, {
 		algorithm: 'HS256',
 
 		expiresIn: refreshTokenLife,
@@ -24,27 +26,14 @@ const generateRefreshToken = (payload) => {
 	return refreshToken
 }
 
-const verifyAccessToken = (token) => {
+const verifyToken = (token, secretKey) => {
 	try {
-		const decodedResult = jwt.verify(token, accessTokenSecretKey) // JWT를 검증합니다.
-		return decodedResult
+		let result
+		result = jwt.verify(token, secretKey) // JWT를 검증합니다.
+		return result
 	} catch (error) {
 		return false
 	}
 }
 
-const verifyRefreshToken = (token) => {
-	try {
-		const decodedResult = jwt.verify(token, refreshTokenSecretKey) // JWT를 검증합니다.
-		return decodedResult
-	} catch (error) {
-		return false
-	}
-}
-
-export {
-	generateAccessToken,
-	generateRefreshToken,
-	verifyAccessToken,
-	verifyRefreshToken,
-}
+export { generateAccessToken, generateRefreshToken, verifyToken }

@@ -7,6 +7,7 @@ const authStore = createStore(
 			isLoggedIn: false,
 			accessToken: null,
 			setLogIn: (token) => set({ isLoggedIn: true, accessToken: token }),
+			setAccessToken: (token) => set({ accessToken: token }),
 			setLogOut: () => set({ isLoggedIn: false, accessToken: null }),
 		}),
 		{

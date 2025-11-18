@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { AdminSchema } from '../../utils/zod/zod.js'
-import axiosApi from '../../utils/axios/axios.js'
+import axiosInstance from '../../utils/axios/axios.js'
 import authStore from '../../utils/zustand/authstore.js'
 
 const Login = () => {
@@ -24,13 +24,15 @@ const Login = () => {
 
 	const onSubmit = async (data) => {
 		try {
-			const response = await axiosApi.post('/auth/admin/login', data)
+			const response = await axiosInstance.post('/auth/admin/login', data)
 
 			if (response.status === 200) {
-				const token = response.headers.authorization
-				console.log(token)
-				authStore.getState().setLogIn(token)
-				navigate('/')
+				if (response.headers.authorization) {
+					const token = response.headers.authorization
+
+					authStore.getState().setLogIn(token)
+					navigate('/')
+				}
 			}
 		} catch (error) {
 			console.error('Validation failed:', error)

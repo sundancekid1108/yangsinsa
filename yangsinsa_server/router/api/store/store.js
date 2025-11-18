@@ -31,10 +31,9 @@ storeRouter.get('/storeinfo', async (req, res) => {
 storeRouter.get('/storelist', async (req, res) => {
 	try {
 		const storeList = await Store.find().sort('-createdDate').exec()
+		console.log('storeList', storeList)
 		if (storeList) {
-			return res.status(200).json({
-				storeList,
-			})
+			return res.status(200).json(storeList)
 		} else {
 			return res.status(400).json({
 				message: '스토어 정보가 없습니다.',

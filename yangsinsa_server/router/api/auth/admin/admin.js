@@ -7,14 +7,16 @@ import {
 import {
 	generateAccessToken,
 	generateRefreshToken,
-	verifyAccessToken,
-	verifyRefreshToken,
+	verifyToken,
 } from '../../../../utils/token.js'
 import Admin from '../../../../database/model/admin/admin.js'
 import config from '../../../../config/config.js'
 import constant from '../../../../constant/constant.js'
 
 const adminAuthRouter = express.Router()
+
+const accessTokenSecretKey = config.accessTokenSecretKey
+const refreshTokenSecretKey = config.refreshTokenSecretKey
 
 adminAuthRouter.post('/login', async (req, res) => {
 	try {
@@ -222,7 +224,7 @@ adminAuthRouter.get('/updateaccesstoken', async (req, res) => {
 		const refreshTokenSecretKey = config.refreshTokenSecretKey
 		const headers = req.headers
 		const refreshToken = headers.cookie.split('refreshToken=')[1]
-		const decodedResult = verifyRefreshToken(refreshToken)
+		const decodedResult = verifyToken(refreshToken, refreshTokenSecretKey)
 
 		const payload = {
 			id: decodedResult.id,
@@ -235,9 +237,7 @@ adminAuthRouter.get('/updateaccesstoken', async (req, res) => {
 			.header('Authorization', `Bearer ${newAccessToken}`)
 			.json({ message: 'Access Token 재발급' })
 	} catch (error) {
-		return res.status(500).json({
-			error,
-		})
+		return res.status(500).json({ message: error })
 	}
 })
 

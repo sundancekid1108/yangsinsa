@@ -7,7 +7,7 @@ const Navbar = () => {
 	const [isOpen, setIsOpen] = useState(false)
 	const location = useLocation()
 	const navItems = [
-		{ name: '스토어 관리', href: 'services', icon: UserIcon },
+		{ name: '스토어 관리', href: 'storelist', icon: UserIcon },
 		{ name: '문의', href: 'contact', icon: UserIcon },
 	]
 
