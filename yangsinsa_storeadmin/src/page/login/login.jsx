@@ -2,9 +2,11 @@ import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
-import { AdminSchema } from '../../utils/zod/zod.js'
+import { loginSchema } from '../../utils/zod/zod.js'
+import { loginUser } from '../../api/auth/auth.js'
 import axiosInstance from '../../utils/axios/axios.js'
 import authStore from '../../utils/zustand/authstore.js'
+import customToast from '../../components/toast/toast.jsx'
 
 const Login = () => {
 	const {
@@ -14,52 +16,54 @@ const Login = () => {
 		formState: { errors, isSubmitting },
 	} = useForm({
 		mode: 'onSubmit',
-		resolver: zodResolver(AdminSchema),
+		resolver: zodResolver(loginSchema),
 	})
 
 	const navigate = useNavigate()
 	const [loginError, setLoginError] = useState(null) // 전역 로그인 에러 상태
 
-	console.log('isSubmitting', isSubmitting)
-
 	const onSubmit = async (data) => {
-		try {
-			const response = await axiosInstance.post(
-				'/auth/storeadmin/login',
-				data
-			)
+		const response = await loginUser(data)
+		console.log(response)
 
-			if (response.status === 200) {
-				if (response.headers.authorization) {
-					const token = response.headers.authorization
+		if (response && response.status === 200) {
+			if (response.headers.authorization) {
+				const token = response.headers.authorization
+				console.log(token)
 
-					authStore.getState().setLogIn(token)
-					navigate('/')
-				}
+				authStore.getState().setLogIn(token)
+				navigate('/')
 			}
-		} catch (error) {
-			console.error('Validation failed:', error)
-			const message = error.response.data.message
-			setLoginError(message)
+		} else {
+			const errorMessage = '아이디와 패스워드를 확인해주세요.'
+			setLoginError(errorMessage)
+			customToast('error', errorMessage)
 		}
+	}
+
+	const onErrors = (errors) => {
+		console.error('검증 실패 원인:', errors)
 	}
 
 	return (
 		<div className="flex items-center justify-center min-h-screen bg-gray-100">
 			<div className="w-full max-w-md p-8 space-y-6 bg-white rounded-xl shadow-2xl">
 				<h2 className="text-3xl font-bold text-center text-gray-900">
-					로그인
+					스토어어드민 로그인
 				</h2>
 
 				{/* 4. 폼 엘리먼트 */}
-				<form className="space-y-6" onSubmit={handleSubmit(onSubmit)}>
+				<form
+					className="space-y-6"
+					onSubmit={handleSubmit(onSubmit, onErrors)}
+				>
 					{/* 사용자 이름 (Username) 입력 필드 */}
 					<div>
 						<label
-							htmlFor="username"
+							htmlFor="userName"
 							className="block text-sm font-medium text-gray-700"
 						>
-							사용자 이름
+							아이디
 						</label>
 						<div className="mt-1">
 							<input
@@ -70,7 +74,6 @@ const Login = () => {
                   focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm
                   ${errors.userName ? 'border-red-500' : 'border-gray-300'}
                 `}
-								// register 함수로 필드 등록 및 유효성 규칙 설정
 								{...register('userName', {
 									required: '아이디를 입력해주세요.',
 								})}
@@ -125,12 +128,6 @@ const Login = () => {
 						>
 							{isSubmitting ? '로딩중...' : '로그인'}
 						</button>
-
-						{loginError && (
-							<p className="mt-2 text-sm text-red-500">
-								{loginError}
-							</p>
-						)}
 					</div>
 				</form>
 			</div>

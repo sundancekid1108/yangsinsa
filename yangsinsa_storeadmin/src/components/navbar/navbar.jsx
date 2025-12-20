@@ -9,7 +9,7 @@ const Navbar = () => {
 	const navItems = [
 		{ name: '스토어 관리', href: 'store', icon: UserIcon },
 		{ name: '브랜드 관리', href: 'brandlist', icon: UserIcon },
-		{ name: '문의', href: 'contact', icon: UserIcon },
+		{ name: '내정보', href: 'myprofile', icon: UserIcon },
 	]
 
 	return (

@@ -4,7 +4,8 @@ import { QueryClientProvider } from '@tanstack/react-query'
 import { ReactQueryDevtools } from '@tanstack/react-query-devtools'
 import queryClient from './utils/reactquery/queryclient.js'
 import AppRoutes from './routes/routes.jsx'
-
+import { ToastContainer, toast } from 'react-toastify'
+import 'react-toastify/dist/ReactToastify.css'
 import './App.css'
 
 function App() {
@@ -12,6 +13,7 @@ function App() {
 		<div className="App">
 			<QueryClientProvider client={queryClient}>
 				<BrowserRouter>
+					<ToastContainer limit={1} />
 					<AppRoutes />
 				</BrowserRouter>
 				<ReactQueryDevtools />

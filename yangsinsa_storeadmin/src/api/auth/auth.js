@@ -3,12 +3,42 @@ import authStore from '../../utils/zustand/authstore.js'
 
 const updateAccessToken = async () => {
 	try {
-		const result = await axiosInstance('/auth/admin/updateaccesstoken')
+		const response = await axiosInstance.get(
+			'/auth/storeadmin/updateaccesstoken'
+		)
 
-		return result
+		return response
 	} catch (error) {
 		return error
 	}
 }
 
-export { updateAccessToken }
+const registerUser = async (data) => {
+	try {
+		const response = await axiosInstance.post(
+			'/auth/storeadmin/register',
+			data
+		)
+
+		return response
+	} catch (error) {
+		console.log('error!!!')
+		return error
+	}
+}
+
+const loginUser = async (data) => {
+	console.log('loginUser')
+	try {
+		const response = await axiosInstance.post(
+			'/auth/storeadmin/login',
+			data
+		)
+
+		return response
+	} catch (error) {
+		return error
+	}
+}
+
+export { updateAccessToken, registerUser, loginUser }
